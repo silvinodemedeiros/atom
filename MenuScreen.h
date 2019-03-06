@@ -3,18 +3,6 @@
 
 #include "MenuContainer.h"
 
-// toolbar vars
-int toolbarX = 0;
-int toolbarY = 0;
-int toolbarH = 12;
-int toolbarW = 240;
-
-// header data
-int headerX = 0;
-int headerY = 18;
-int headerH = 24;
-int headerW = 240;
-
 class MenuScreen {
   private:
     static const int optAmt = 5;
@@ -26,18 +14,10 @@ class MenuScreen {
     MenuContainer *currentOption;
     Adafruit_TFTLCD *display;
     long inputWait = 0;
-    
-    enum states {
-      NEW_GAME,
-      CREATE_GAME,
-      MANAGE_GAMES,
-      SETTINGS,
-      POWER_OFF
-    };
 
     fillScreen(int color) {
       display->fillScreen(color);
-    }
+    };
 
   public:
     MenuScreen(Adafruit_TFTLCD *tft) {
@@ -48,8 +28,6 @@ class MenuScreen {
       long timeStamp = 0;
 
       fillScreen(bgColor);
-      display->drawRect(toolbarX, toolbarY, toolbarW, toolbarH, DEFAULTGREEN);
-      display->drawRect(headerX, headerY, headerW, headerH, DEFAULTGREEN);
       
       while(counter < optAmt) {
         
@@ -81,6 +59,78 @@ class MenuScreen {
 
     void setCurrentOption(MenuContainer *container) {
       currentOption = container;
+    }
+
+    boolean selectCurrent() {
+      int counter = 0;
+      boolean isUpperTransitioning = true;
+      boolean isLowerTransitioning = true;
+
+      for (counter = 0; counter < optAmt; counter++) {
+        if (optItems[counter] == currentOption) {
+          counter++;
+          break;
+        }
+
+        optItems[counter]->erase();
+        isUpperTransitioning = optItems[counter]->translateY(-200, -1);
+        optItems[counter]->draw();
+      }
+      
+      currentOption->erase();
+      
+      boolean isCurrentTranslating = currentOption->translateY(optY0, -1);
+      boolean isCurrentExpandingHeight = currentOption->expandHeight(250);
+      
+      currentOption->draw();
+
+      while (counter < optAmt) {
+        optItems[counter]->erase();
+        isLowerTransitioning = optItems[counter]->translateY(520, 1);
+        optItems[counter]->draw();
+
+        counter++;
+      }
+
+      return isCurrentTranslating && isCurrentExpandingHeight && isUpperTransitioning && isLowerTransitioning;
+    }
+
+    boolean unselectCurrent() {
+      int counter = 0;
+      boolean isUpperTransitioning = true;
+      boolean isLowerTransitioning = true;
+
+      for (counter = 0; counter < optAmt; counter++) {
+        if (optItems[counter] == currentOption) {
+          counter++;
+          break;
+        }
+
+        optItems[counter]->erase();
+        isUpperTransitioning = optItems[counter]->translateY(optItems[counter]->getInitY(), 1);
+        optItems[counter]->draw();
+      }
+      
+      currentOption->erase();
+
+      boolean isCurrentTranslating = currentOption->translateY(currentOption->getInitY(), 1);
+      boolean isCurrentShrinkingHeight = currentOption->shrinkHeight();
+      
+      currentOption->draw();
+
+      while (counter < optAmt) {
+        optItems[counter]->erase();
+        isLowerTransitioning = optItems[counter]->translateY(optItems[counter]->getInitY(), -1);
+        optItems[counter]->draw();
+
+        counter++;
+      }
+
+      return isCurrentTranslating && isCurrentShrinkingHeight && isUpperTransitioning && isLowerTransitioning;
+    }
+
+    void focus() {
+      currentOption->focus();
     }
 
     void focusNext() {

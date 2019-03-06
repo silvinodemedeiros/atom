@@ -23,12 +23,10 @@ class Ball {
     int ballColor = DEFAULTGREEN;
     int bgColor = MAINBG;
     Adafruit_TFTLCD* display;
-    Tile* collisionSetHead;
 
   public:
-    Ball(Adafruit_TFTLCD *tft, Tile* csHead) {
+    Ball(Adafruit_TFTLCD *tft) {
       display = tft;
-      collisionSetHead = csHead;
     }
 
     void draw() {
@@ -43,22 +41,6 @@ class Ball {
       }
     }
 
-    boolean checkTileCollision(int x, int y) {
-      boolean hasCollision = false;
-      Tile* tmpTile = collisionSetHead->getNextOnCollision();
-
-      while (tmpTile != NULL) {
-        Serial.println(tmpTile->getWidth());
-        if (tmpTile->verifyCollision(x, y)) {
-          hasCollision = true;
-        }
-
-        tmpTile = tmpTile->getNextOnCollision();
-      }
-
-      return hasCollision;
-    }
-
     void setNextPosY (Player *player) {
       // gets ball bottom edge point
       int ballEdgeBottom = posY + ballRadius + ballBorder;
@@ -68,7 +50,6 @@ class Ball {
       if (player->verifyCollision(posX, ballEdgeBottom)) { dirV = -1; }
       // check top wall collision
       else if (ballEdgeTop <= 0) { dirV = 1; }
-      else if (checkTileCollision(posX, ballEdgeTop)) { dirV = 1; }
 
       // get next position based on direction
       nextPosY += speed * dirV;
@@ -96,10 +77,6 @@ class Ball {
       // updates position variables
       posX = nextPosX;
       posY = nextPosY;
-    }
-
-    void changeDirection() {
-
     }
   
 };

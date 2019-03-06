@@ -56,7 +56,7 @@ void loop() {
 
 	// home
 	else if (state == HOME_STATE) {
-		// Serial.println("HOME_STATE");
+		Serial.println("HOME_STATE");
 		if (hasLoaded == false) {
 			initializeHomeScreen(&tft);
 			hasLoaded = true;
@@ -67,9 +67,45 @@ void loop() {
 		}
 
 		if (inputLock == false || !homeScreen->isInputWaiting()) {
-			if (selInput == HIGH) { goToState(GAME_STATE); }
+			if (selInput == HIGH) { goToState(HOME_SELECT); }
 			else if (fwInput == HIGH) { homeScreen->focusNext(); }
 			else if (bwInput == HIGH) { homeScreen->focusPrevious(); }
+		}
+	}
+	
+	// home -> item_selected
+	else if (state == HOME_SELECT) {
+		Serial.println("HOME_SELECT");
+		if (homeScreen->selectCurrent()) {
+			goToState(ITEM_SELECTED);
+		}
+	}
+	
+	// home -> item_selected
+	else if (state == HOME_UNSELECT) {
+		Serial.println("HOME_UNSELECT");
+		if (homeScreen->unselectCurrent()) {
+			goToState(HOME_STATE);
+			homeScreen->focus();
+			hasLoaded = true;
+		}
+	}
+
+	else if (state == ITEM_SELECTED) {
+		Serial.println("ITEM_SELECTED");
+		if (hasLoaded == false) {
+			hasLoaded = true;
+		} else {
+			if (isInputReleased()) {
+				inputLock = false;
+			}
+		}
+
+		if (inputLock == false || !homeScreen->isInputWaiting()) {
+			if (retInput == HIGH) {
+				goToState(HOME_UNSELECT);
+				hasLoaded = true;
+			}
 		}
 	}
 
@@ -101,7 +137,6 @@ void loop() {
 	// game -> home
 	else if (state == FROM_GAME_TO_HOME) {
 		if (hasLoaded == false) {
-			gameScreen->removeTiles();
 			goToState(HOME_STATE);
 		}
 	}
