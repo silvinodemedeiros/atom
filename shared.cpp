@@ -7,8 +7,14 @@
 int currentBg = WHITE;
 bool hasLoaded = false;
 bool inputLock = false;
-int state = INITIAL;
+int state = SYSTEM_INITIAL;
 int rot = 2;
 int transitionStep = 5;
+
+void goToState(int nextState) {
+  inputLock = true;
+  hasLoaded = false;
+  state = nextState;
+}
 
 #endif

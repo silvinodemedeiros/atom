@@ -1,7 +1,7 @@
 #ifndef STATES_H
 #define STATES_H
 
-#define INITIAL 0
+#define SYSTEM_INITIAL 0
 #define HOME_STATE 1
 #define HOME_SELECT 11
 #define HOME_UNSELECT 12

@@ -10,6 +10,8 @@ class MenuScreen {
     const int optX0 = 6;
     const int optGap = 6;
     const int bgColor = MAINBG;
+    int menuContainerW = 228;
+    int menuContainerH = 46;
     MenuContainer *optItems[optAmt];
     MenuContainer *currentOption;
     Adafruit_TFTLCD *display;
@@ -18,6 +20,15 @@ class MenuScreen {
     fillScreen(int color) {
       display->fillScreen(color);
     };
+
+    enum ScreenState {
+      INITIAL,
+      IS_ITEM_SELECTING,
+      IS_ITEM_UNSELECTING,
+      IS_ITEM_SELECTED
+    };
+
+    ScreenState state = INITIAL;
 
   public:
     MenuScreen(Adafruit_TFTLCD *tft) {
@@ -32,7 +43,7 @@ class MenuScreen {
       while(counter < optAmt) {
         
         // MenuContainer optContainer(optX0, currentY);
-        optItems[counter] = new MenuContainer(display, optX0, currentY);
+        optItems[counter] = new MenuContainer(display, optX0, currentY, menuContainerW, menuContainerH);
         optItems[counter]->draw();
 
         // manages navigation chain
@@ -57,76 +68,120 @@ class MenuScreen {
       currentOption->focus();
     }
 
+    void manageState() {
+      switch (state) {
+        case IS_ITEM_SELECTED:
+          Serial.println("HOME STATE - item selected");
+          manageCurrentOptionInput();
+          break;
+        case IS_ITEM_SELECTING:
+          Serial.println("HOME STATE - selecting item");
+          checkSelectionProgress();
+          break;
+        case IS_ITEM_UNSELECTING:
+          Serial.println("HOME STATE - unselecting item");
+          checkSelectionProgress();
+          break;
+        default:
+          Serial.println("HOME STATE - initial");
+          manageInput();
+      }
+    }
+
+    void setState(ScreenState nextState) {
+      state = nextState;
+    }
+
+    void manageInput() {
+      if (selInput == HIGH) {
+        setState(IS_ITEM_SELECTING);
+        selectCurrent();
+      }
+      else if (fwInput == HIGH) { focusNext(); }
+      else if (bwInput == HIGH) { focusPrevious(); }
+    }
+
+    void manageCurrentOptionInput() {
+      if (retInput == HIGH) {
+        setState(IS_ITEM_UNSELECTING);
+        unselectCurrent();
+      }
+    }
+
     void setCurrentOption(MenuContainer *container) {
       currentOption = container;
     }
 
     boolean selectCurrent() {
       int counter = 0;
-      boolean isUpperTransitioning = true;
-      boolean isLowerTransitioning = true;
 
       for (counter = 0; counter < optAmt; counter++) {
+
+        // stops if it arrives in the current selected item
         if (optItems[counter] == currentOption) {
-          counter++;
           break;
         }
 
-        optItems[counter]->erase();
-        isUpperTransitioning = optItems[counter]->translateY(-200, -1);
-        optItems[counter]->draw();
+        optItems[counter]->startTranslateY(-200, -1);
       }
-      
-      currentOption->erase();
-      
-      boolean isCurrentTranslating = currentOption->translateY(optY0, -1);
-      boolean isCurrentExpandingHeight = currentOption->expandHeight(250);
-      
-      currentOption->draw();
+
+      currentOption->startTranslateY(optY0, -1);
+      counter++;
 
       while (counter < optAmt) {
-        optItems[counter]->erase();
-        isLowerTransitioning = optItems[counter]->translateY(520, 1);
-        optItems[counter]->draw();
-
+        optItems[counter]->startTranslateY(520, 1);
         counter++;
       }
 
-      return isCurrentTranslating && isCurrentExpandingHeight && isUpperTransitioning && isLowerTransitioning;
+      inputLock = true;
+      inputWait = millis();
     }
 
     boolean unselectCurrent() {
       int counter = 0;
-      boolean isUpperTransitioning = true;
-      boolean isLowerTransitioning = true;
 
       for (counter = 0; counter < optAmt; counter++) {
+
+        // stops if it arrives in the current selected item
         if (optItems[counter] == currentOption) {
-          counter++;
           break;
         }
 
-        optItems[counter]->erase();
-        isUpperTransitioning = optItems[counter]->translateY(optItems[counter]->getInitY(), 1);
-        optItems[counter]->draw();
+        optItems[counter]->startTranslateY(optItems[counter]->getInitY(), 1);
       }
-      
-      currentOption->erase();
 
-      boolean isCurrentTranslating = currentOption->translateY(currentOption->getInitY(), 1);
-      boolean isCurrentShrinkingHeight = currentOption->shrinkHeight();
-      
-      currentOption->draw();
+      currentOption->startTranslateY(optItems[counter]->getInitY(), 1);
+      counter++;
 
       while (counter < optAmt) {
-        optItems[counter]->erase();
-        isLowerTransitioning = optItems[counter]->translateY(optItems[counter]->getInitY(), -1);
-        optItems[counter]->draw();
-
+        optItems[counter]->startTranslateY(optItems[counter]->getInitY(), -1);
         counter++;
       }
 
-      return isCurrentTranslating && isCurrentShrinkingHeight && isUpperTransitioning && isLowerTransitioning;
+      inputLock = true;
+      inputWait = millis();
+    }
+
+    checkSelectionProgress() {
+
+      int counter = 0;
+      boolean isAnimating = false;
+
+      for (counter = 0; counter < optAmt; counter++) {
+        optItems[counter]->manageState();
+        isAnimating = optItems[counter]->isAnimating();
+      }
+
+      if (!isAnimating) {
+        if (state == IS_ITEM_SELECTING) {
+          setState(IS_ITEM_SELECTED);
+        } else {
+          setState(INITIAL);
+        }
+      } else {
+        inputLock = true;
+        inputWait = millis();
+      }
     }
 
     void focus() {
