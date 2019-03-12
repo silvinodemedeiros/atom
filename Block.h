@@ -13,8 +13,9 @@ class Block {
       IS_TRANSITIONING_Y,
       IS_TRANSITIONING_X,
       IS_EXPANDING_HEIGHT,
+      IS_EXPANDING_WIDTH,
       IS_SHRINKING_HEIGHT,
-      DONE_ANIMATION,
+      DONE_RENDER,
       WILL_RENDER_CHILDREN,
       IS_RENDERING_CHILDREN
     };
@@ -38,13 +39,12 @@ class Block {
     int translationDirY = 0;
     int translationStep = 20;
     int expansionHeightStep = 30;
-    BlockState doneState = INITIAL;
+    int expansionToHeight = -1;
 
     // tree attributes
     Block *children;
     Block *parentNode;
-    boolean willRenderChildren = false;
-    boolean isChildrenRendered = false;
+    boolean hasChildren = false;
 
     // tmp container values
     int y0 = 58;
@@ -115,67 +115,83 @@ class Block {
       borderColor = bc;
     }
 
+    void setState(BlockState nextState) {
+      state = nextState;
+    }
+
     void manageInput() {
       if (selInput == HIGH) {
         goToState(GAME_STATE);
       }
     }
 
+    boolean isRendering() {
+      return state != INITIAL;
+    }
+
     void manageState() {
+
+      manageChildrenState();
+      
       switch(state) {
         case WILL_RENDER_CHILDREN:
           startChildrenRender();
           break;
         case IS_RENDERING_CHILDREN:
-          stepChildrenRender();
+          checkChildrenRender();
           break;
         case IS_TRANSITIONING_Y:
-          stepTransitionY();
+          stepTranslationY();
           break;
-        case DONE_ANIMATION:
+        case IS_EXPANDING_HEIGHT:
+          stepExpansionHeight();
+          break;
+        case DONE_RENDER:
           setState(WILL_RERENDER);
           break;
         case WILL_RERENDER:
           draw();
+          setState(INITIAL);
           break;
       }
     }
 
-    void setState(BlockState nextState) {
-      state = nextState;
+    void manageChildrenState() {
+      if (hasChildren) {
+        children->manageState();
+      }
     }
 
-    boolean isRendering() {
-      if (state == IS_TRANSITIONING_Y ||
-          state == WILL_RENDER_CHILDREN ||
-          state == IS_RENDERING_CHILDREN) {
-        return true;
-      }
+    void appendChild(Block *child) {
+      children = child;
+      hasChildren = true;
+    }
 
-      return false;
+    void removeChild() {
+      hasChildren = false;
+      children->erase();
+      delete children;
     }
 
     void startChildrenRender() {
       setState(IS_RENDERING_CHILDREN);
+      children->startExpansionHeight(150);
     }
 
-    void stepChildrenRender() {
-      children->setX(x0);
-      children->setY(y0 + height + 10);
-      children->draw();
-
-      setState(doneState);
+    void checkChildrenRender() {
+      if (hasChildren && !children->isRendering())
+        setState(DONE_RENDER);
     }
 
     // BASIC ANIMATIONS
-    void startTranslateY(int toY, int dir) {
+    void startTranslationY(int toY, int dir) {
       translationToY = toY;
       translationDirY = dir;
 
       setState(IS_TRANSITIONING_Y);
     }
 
-    void stepTransitionY() {
+    void stepTranslationY() {
 
       erase();
 
@@ -190,13 +206,12 @@ class Block {
           translationToY = -1;
           translationDirY = 0;
           
-          if (willRenderChildren) {
+          if (hasChildren) {
             setState(WILL_RENDER_CHILDREN);
           } else {
-            setState(DONE_ANIMATION);
+            setState(DONE_RENDER);
           }
         }
-
       }
 
       // upwards translation
@@ -209,10 +224,10 @@ class Block {
           translationToY = -1;
           translationDirY = 0;
           
-          if (willRenderChildren) {
+          if (hasChildren) {
             setState(WILL_RENDER_CHILDREN);
           } else {
-            setState(DONE_ANIMATION);
+            setState(DONE_RENDER);
           }
         }
       }
@@ -220,40 +235,29 @@ class Block {
       draw();
     }
 
-    boolean translateY(int toY, int dir) {
-
-      if (dir == 1) {
-
-        y += translationStep;
-
-        // is animation done?
-        if (y > toY) {
-          y = toY;
-          return true;
-        }
-
-      } else {
-        y -= translationStep;
-
-        if (y < toY) {
-          y = toY;
-          return true;
-        }
-      }
-      
-      return false;
+    void startExpansionHeight(int toHeight) {
+      expansionToHeight = toHeight;
+      setState(IS_EXPANDING_HEIGHT);
     }
 
-    boolean expandHeight (int toHeight) {
+    void stepExpansionHeight () {
+
+      erase();
 
       height += expansionHeightStep;
-    
-      if (height > toHeight) {
-        height = toHeight;
-        return true;
+
+      if (height >= expansionToHeight) {
+        height = expansionToHeight;
+        expansionToHeight = -1;
+
+        if (hasChildren) {
+          setState(WILL_RENDER_CHILDREN);
+        } else {
+          setState(DONE_RENDER);
+        }
       }
-      
-      return false;
+
+      draw();
     }
 
     boolean shrinkHeight () {

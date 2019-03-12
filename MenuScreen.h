@@ -147,14 +147,14 @@ class MenuScreen {
       for (counter = 0; counter < optAmt; counter++) {
         // stops if it arrives in the current selected item
         if (optItems[counter] == currentOption) { break; }
-        optItems[counter]->startTranslateY(optItems[counter]->getInitY(), 1);
+        optItems[counter]->translateY(optItems[counter]->getInitY(), 1);
       }
 
       currentOption->unselect();
       counter++;
 
       while (counter < optAmt) {
-        optItems[counter]->startTranslateY(optItems[counter]->getInitY(), -1);
+        optItems[counter]->translateY(optItems[counter]->getInitY(), -1);
         counter++;
       }
 

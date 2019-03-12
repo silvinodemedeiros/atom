@@ -13,6 +13,10 @@ class MenuContainer : public Block {
     int defaultColor = DEFAULTGREEN;
     int activeColor = WHITE;
 
+    // tmp container values
+    int y0 = 58;
+    int x0 = 6;
+
   public:
     MenuContainer(Adafruit_TFTLCD *tft, int ux, int uy, int w, int h) : 
     Block(tft, ux, uy, w, h) {}
@@ -44,21 +48,18 @@ class MenuContainer : public Block {
     }
 
     void select() {
-      children = new Block(display, 1000, 0, width, 50);
-      doneState = DONE_ANIMATION;
-      willRenderChildren = true;
-      startTranslateY(y0, -1);
+      children = new Block(display, x0, y0 + height + 10, width, 0);
+      appendChild(children);
+      startTranslationY(y0, -1);
     }
 
     void unselect() {
-      children->erase();
-      delete children;
-      willRenderChildren = false;
-      startTranslateY(initY, 1);
+      removeChild();
+      startTranslationY(initY, 1);
     }
 
     void translateY(int toY, int dir) {
-      startTranslateY(toY, dir);
+      startTranslationY(toY, dir);
     }
 };
 
