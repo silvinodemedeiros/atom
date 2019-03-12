@@ -69,6 +69,8 @@ class MenuScreen {
     }
 
     void manageState() {
+      manageChildrenState();
+      
       switch (state) {
         case IS_ITEM_SELECTED:
           Serial.println("HOME STATE - item selected");
@@ -108,6 +110,12 @@ class MenuScreen {
       }
     }
 
+    void manageChildrenState() {
+      for (int i = 0; i < optAmt; i++) {
+        optItems[i]->manageState();
+      }
+    }
+
     void setCurrentOption(MenuContainer *container) {
       currentOption = container;
     }
@@ -116,20 +124,16 @@ class MenuScreen {
       int counter = 0;
 
       for (counter = 0; counter < optAmt; counter++) {
-
         // stops if it arrives in the current selected item
-        if (optItems[counter] == currentOption) {
-          break;
-        }
-
-        optItems[counter]->startTranslateY(-200, -1);
+        if (optItems[counter] == currentOption) { break; }
+        optItems[counter]->translateY(-200, -1);
       }
 
-      currentOption->startTranslateY(optY0, -1);
+      currentOption->select();
       counter++;
 
       while (counter < optAmt) {
-        optItems[counter]->startTranslateY(520, 1);
+        optItems[counter]->translateY(520, 1);
         counter++;
       }
 
@@ -141,16 +145,12 @@ class MenuScreen {
       int counter = 0;
 
       for (counter = 0; counter < optAmt; counter++) {
-
         // stops if it arrives in the current selected item
-        if (optItems[counter] == currentOption) {
-          break;
-        }
-
+        if (optItems[counter] == currentOption) { break; }
         optItems[counter]->startTranslateY(optItems[counter]->getInitY(), 1);
       }
 
-      currentOption->startTranslateY(optItems[counter]->getInitY(), 1);
+      currentOption->unselect();
       counter++;
 
       while (counter < optAmt) {
@@ -165,14 +165,13 @@ class MenuScreen {
     checkSelectionProgress() {
 
       int counter = 0;
-      boolean isAnimating = false;
+      boolean isRendering = false;
 
       for (counter = 0; counter < optAmt; counter++) {
-        optItems[counter]->manageState();
-        isAnimating = optItems[counter]->isAnimating();
+        isRendering = optItems[counter]->isRendering();
       }
 
-      if (!isAnimating) {
+      if (!isRendering) {
         if (state == IS_ITEM_SELECTING) {
           setState(IS_ITEM_SELECTED);
         } else {

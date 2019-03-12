@@ -9,13 +9,14 @@ class Block {
     // states
     enum BlockState {
       INITIAL,
-      IS_DISABLING,
-      DISABLED,
+      WILL_RERENDER,
       IS_TRANSITIONING_Y,
       IS_TRANSITIONING_X,
       IS_EXPANDING_HEIGHT,
       IS_SHRINKING_HEIGHT,
-      SELECTED
+      DONE_ANIMATION,
+      WILL_RENDER_CHILDREN,
+      IS_RENDERING_CHILDREN
     };
 
     BlockState state = INITIAL;
@@ -37,6 +38,17 @@ class Block {
     int translationDirY = 0;
     int translationStep = 20;
     int expansionHeightStep = 30;
+    BlockState doneState = INITIAL;
+
+    // tree attributes
+    Block *children;
+    Block *parentNode;
+    boolean willRenderChildren = false;
+    boolean isChildrenRendered = false;
+
+    // tmp container values
+    int y0 = 58;
+    int x0 = 6;
 
   public:
     Block(Adafruit_TFTLCD *tft, int ux, int uy, int w, int h) {
@@ -83,19 +95,27 @@ class Block {
       return initX;
     }
     
-    void setWidth (int w) {
+    void setX (int nx) {
+      x = nx;
+    }
+
+    void setY(int ny) {
+      y = ny;
+    }
+
+    void setWidth(int w) {
       width = w;
     }
 
-    void setHeight (int h) {
+    void setHeight(int h) {
       height = h;
     }
 
-    void setBorderColor (int bc) {
+    void setBorderColor(int bc) {
       borderColor = bc;
     }
 
-    void manageInput () {
+    void manageInput() {
       if (selInput == HIGH) {
         goToState(GAME_STATE);
       }
@@ -103,10 +123,21 @@ class Block {
 
     void manageState() {
       switch(state) {
+        case WILL_RENDER_CHILDREN:
+          startChildrenRender();
+          break;
+        case IS_RENDERING_CHILDREN:
+          stepChildrenRender();
+          break;
         case IS_TRANSITIONING_Y:
           stepTransitionY();
-        case SELECTED:
-          manageInput();
+          break;
+        case DONE_ANIMATION:
+          setState(WILL_RERENDER);
+          break;
+        case WILL_RERENDER:
+          draw();
+          break;
       }
     }
 
@@ -114,12 +145,26 @@ class Block {
       state = nextState;
     }
 
-    boolean isAnimating() {
-      if (state == IS_TRANSITIONING_Y) {
+    boolean isRendering() {
+      if (state == IS_TRANSITIONING_Y ||
+          state == WILL_RENDER_CHILDREN ||
+          state == IS_RENDERING_CHILDREN) {
         return true;
       }
 
       return false;
+    }
+
+    void startChildrenRender() {
+      setState(IS_RENDERING_CHILDREN);
+    }
+
+    void stepChildrenRender() {
+      children->setX(x0);
+      children->setY(y0 + height + 10);
+      children->draw();
+
+      setState(doneState);
     }
 
     // BASIC ANIMATIONS
@@ -128,7 +173,6 @@ class Block {
       translationDirY = dir;
 
       setState(IS_TRANSITIONING_Y);
-      stepTransitionY();
     }
 
     void stepTransitionY() {
@@ -145,7 +189,12 @@ class Block {
           y = translationToY;
           translationToY = -1;
           translationDirY = 0;
-          setState(SELECTED);
+          
+          if (willRenderChildren) {
+            setState(WILL_RENDER_CHILDREN);
+          } else {
+            setState(DONE_ANIMATION);
+          }
         }
 
       }
@@ -159,7 +208,12 @@ class Block {
           y = translationToY;
           translationToY = -1;
           translationDirY = 0;
-          setState(SELECTED);
+          
+          if (willRenderChildren) {
+            setState(WILL_RENDER_CHILDREN);
+          } else {
+            setState(DONE_ANIMATION);
+          }
         }
       }
 

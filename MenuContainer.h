@@ -42,6 +42,24 @@ class MenuContainer : public Block {
     void setNext(MenuContainer *container) {
       next = container;
     }
+
+    void select() {
+      children = new Block(display, 1000, 0, width, 50);
+      doneState = DONE_ANIMATION;
+      willRenderChildren = true;
+      startTranslateY(y0, -1);
+    }
+
+    void unselect() {
+      children->erase();
+      delete children;
+      willRenderChildren = false;
+      startTranslateY(initY, 1);
+    }
+
+    void translateY(int toY, int dir) {
+      startTranslateY(toY, dir);
+    }
 };
 
 #endif
