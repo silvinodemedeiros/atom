@@ -1,9 +1,10 @@
 #ifndef MENUSCREEN_H
 #define MENUSCREEN_H
 
-#include "MenuContainer.h"
+#include "Container.h"
+#include "Block.h"
 
-class MenuScreen {
+class Screen {
   private:
     static const int optAmt = 5;
     const int optY0 = 58;
@@ -12,8 +13,8 @@ class MenuScreen {
     const int bgColor = MAINBG;
     int menuContainerW = 228;
     int menuContainerH = 46;
-    MenuContainer *optItems[optAmt];
-    MenuContainer *currentOption;
+    Container *optItems[optAmt];
+    Container *currentOption;
     Adafruit_TFTLCD *display;
     long inputWait = 0;
 
@@ -31,8 +32,7 @@ class MenuScreen {
     ScreenState state = INITIAL;
 
   public:
-    MenuScreen(Adafruit_TFTLCD *tft) {
-      int counter = 0;
+    Screen(Adafruit_TFTLCD *tft) {
       int currentY = optY0;
       boolean isActive = false;
       display = tft;
@@ -40,10 +40,9 @@ class MenuScreen {
 
       fillScreen(bgColor);
       
-      while(counter < optAmt) {
+      for (int counter = 0; counter < optAmt; counter++) {
         
-        // MenuContainer optContainer(optX0, currentY);
-        optItems[counter] = new MenuContainer(display, optX0, currentY, menuContainerW, menuContainerH);
+        optItems[counter] = new Container(display, optX0, currentY, menuContainerW, menuContainerH);
         optItems[counter]->draw();
 
         // manages navigation chain
@@ -53,7 +52,11 @@ class MenuScreen {
         }
 
         currentY += optItems[counter]->getHeight() + optGap;
-        counter++;
+
+        if (counter == 1) {
+          Block *block = new Block(display, optItems[counter]->getX() + 10, optItems[counter]->getY() + 10, 75, 20);
+          optItems[counter]->appendChild(block);
+        }
       }
 
       // first option
@@ -66,6 +69,7 @@ class MenuScreen {
 
       setCurrentOption(optItems[0]);
       currentOption->focus();
+
     }
 
     void manageState() {
@@ -107,6 +111,8 @@ class MenuScreen {
       if (retInput == HIGH) {
         setState(IS_ITEM_UNSELECTING);
         unselectCurrent();
+      } else {
+        currentOption->manageInput();
       }
     }
 
@@ -116,7 +122,7 @@ class MenuScreen {
       }
     }
 
-    void setCurrentOption(MenuContainer *container) {
+    void setCurrentOption(Container *container) {
       currentOption = container;
     }
 

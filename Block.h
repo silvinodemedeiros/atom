@@ -9,15 +9,12 @@ class Block {
     // states
     enum BlockState {
       INITIAL,
-      WILL_RERENDER,
       IS_TRANSITIONING_Y,
       IS_TRANSITIONING_X,
       IS_EXPANDING_HEIGHT,
       IS_EXPANDING_WIDTH,
       IS_SHRINKING_HEIGHT,
-      DONE_RENDER,
-      WILL_RENDER_CHILDREN,
-      IS_RENDERING_CHILDREN
+      DONE_RENDER
     };
 
     BlockState state = INITIAL;
@@ -41,11 +38,6 @@ class Block {
     int expansionHeightStep = 30;
     int expansionToHeight = -1;
 
-    // tree attributes
-    Block *children;
-    Block *parentNode;
-    boolean hasChildren = false;
-
     // tmp container values
     int y0 = 58;
     int x0 = 6;
@@ -55,10 +47,10 @@ class Block {
       display = tft;
       x = ux;
       y = uy;
-      width = w;
-      height = h;
       initX = x;
       initY = y;
+      width = w;
+      height = h;
       initWidth = width;
       initHeight = height;
     }
@@ -95,6 +87,14 @@ class Block {
       return initX;
     }
     
+    int getX () {
+      return x;
+    }
+
+    int getY() {
+      return y;
+    }
+    
     void setX (int nx) {
       x = nx;
     }
@@ -119,27 +119,16 @@ class Block {
       state = nextState;
     }
 
-    void manageInput() {
-      if (selInput == HIGH) {
-        goToState(GAME_STATE);
-      }
-    }
-
     boolean isRendering() {
       return state != INITIAL;
     }
 
-    void manageState() {
+    /* USR= NEEDS TO BE USER IMPLEMENTED */
+    void manageInput() {}
 
-      manageChildrenState();
+    void manageState() {
       
       switch(state) {
-        case WILL_RENDER_CHILDREN:
-          startChildrenRender();
-          break;
-        case IS_RENDERING_CHILDREN:
-          checkChildrenRender();
-          break;
         case IS_TRANSITIONING_Y:
           stepTranslationY();
           break;
@@ -147,40 +136,12 @@ class Block {
           stepExpansionHeight();
           break;
         case DONE_RENDER:
-          setState(WILL_RERENDER);
-          break;
-        case WILL_RERENDER:
-          draw();
           setState(INITIAL);
           break;
+        case INITIAL:
+          draw();
+          break;
       }
-    }
-
-    void manageChildrenState() {
-      if (hasChildren) {
-        children->manageState();
-      }
-    }
-
-    void appendChild(Block *child) {
-      children = child;
-      hasChildren = true;
-    }
-
-    void removeChild() {
-      hasChildren = false;
-      children->erase();
-      delete children;
-    }
-
-    void startChildrenRender() {
-      setState(IS_RENDERING_CHILDREN);
-      children->startExpansionHeight(150);
-    }
-
-    void checkChildrenRender() {
-      if (hasChildren && !children->isRendering())
-        setState(DONE_RENDER);
     }
 
     // BASIC ANIMATIONS
@@ -206,11 +167,7 @@ class Block {
           translationToY = -1;
           translationDirY = 0;
           
-          if (hasChildren) {
-            setState(WILL_RENDER_CHILDREN);
-          } else {
-            setState(DONE_RENDER);
-          }
+          setState(DONE_RENDER);
         }
       }
 
@@ -224,11 +181,7 @@ class Block {
           translationToY = -1;
           translationDirY = 0;
           
-          if (hasChildren) {
-            setState(WILL_RENDER_CHILDREN);
-          } else {
-            setState(DONE_RENDER);
-          }
+          setState(DONE_RENDER);
         }
       }
 
@@ -250,11 +203,7 @@ class Block {
         height = expansionToHeight;
         expansionToHeight = -1;
 
-        if (hasChildren) {
-          setState(WILL_RENDER_CHILDREN);
-        } else {
-          setState(DONE_RENDER);
-        }
+        setState(DONE_RENDER);
       }
 
       draw();

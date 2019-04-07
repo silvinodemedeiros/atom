@@ -1,5 +1,5 @@
-#include <SPFD5408_Adafruit_GFX.h>		// graphics library
-#include <SPFD5408_Adafruit_TFTLCD.h> // hardware specific library
+#include <SPFD5408_Adafruit_GFX.h>
+#include <SPFD5408_Adafruit_TFTLCD.h>
 
 long playerStallTime = 33;
 unsigned long playerStallPrev = 0;
@@ -12,7 +12,6 @@ Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 #include "input.h" 									// input ports
 
 #include "renderHomescreen.h"
-#include "renderGamescreen.h"
 
 bool isInputReleased () {
 	if (fwInput != -1 && bwInput != -1 && selInput != -1 && retInput != -1)
@@ -61,38 +60,6 @@ void loop() {
 
 		if (inputLock == false || !homeScreen->isInputWaiting()) {
 			homeScreen->manageState();
-		}
-	}
-
-	// game
-	if (state == GAME_STATE) {
-		if (hasLoaded == false) {
-			initializeGameScreen(&tft);
-			hasLoaded = true;
-		} else if (isInputReleased()) {
-
-			gameScreen->animate();
-			playerStallPrev = currentMillis;
-			
-			inputLock = false;
-		}
-
-		if (inputLock == false) {
-			if (retInput == HIGH) {
-				goToState(HOME_STATE);
-			}
-		}
-
-		if (currentMillis - playerStallPrev >= playerStallTime) {
-			gameScreen->animate();
-			playerStallPrev = currentMillis;
-		}
-	}
-
-	// game -> home
-	else if (state == FROM_GAME_TO_HOME) {
-		if (hasLoaded == false) {
-			goToState(HOME_STATE);
 		}
 	}
 		
