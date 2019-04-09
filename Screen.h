@@ -13,8 +13,9 @@ class Screen {
     const int bgColor = MAINBG;
     int menuContainerW = 228;
     int menuContainerH = 46;
-    Container *optItems[optAmt];
+    Container *children[optAmt];
     Container *currentOption;
+    Container *wrapper;
     Adafruit_TFTLCD *display;
     long inputWait = 0;
 
@@ -38,36 +39,40 @@ class Screen {
       display = tft;
       long timeStamp = 0;
 
+      wrapper = new Container(display, optX0, optY0, 0, 0);
+
       fillScreen(bgColor);
       
       for (int counter = 0; counter < optAmt; counter++) {
         
-        optItems[counter] = new Container(display, optX0, currentY, menuContainerW, menuContainerH);
-        optItems[counter]->draw();
+        children[counter] = new Container(display, optX0, currentY, menuContainerW, menuContainerH);
+        children[counter]->draw();
 
         // manages navigation chain
         if(counter > 0 && counter < optAmt) {
-          optItems[counter - 1]->setNext(optItems[counter]);
-          optItems[counter]->setPrevious(optItems[counter - 1]);
+          children[counter - 1]->setNext(children[counter]);
+          children[counter]->setPrevious(children[counter - 1]);
         }
 
-        currentY += optItems[counter]->getHeight() + optGap;
+        currentY += children[counter]->getHeight() + optGap;
 
         if (counter == 1) {
-          Block *block = new Block(display, optItems[counter]->getX() + 10, optItems[counter]->getY() + 10, 75, 20);
-          optItems[counter]->appendChild(block);
+          Container *block1 = new Container(display, children[counter]->getX() + 10, children[counter]->getY() + 10, 20, 20);
+          Container *block2 = new Container(display, children[counter]->getX() + 40, children[counter]->getY() + 10, 20, 20);
+          children[counter]->appendChild(block1);
+          children[counter]->appendChild(block2);
         }
       }
 
       // first option
-      optItems[0]->setNext(optItems[1]);
-      optItems[0]->setPrevious(optItems[optAmt - 1]);
+      children[0]->setNext(children[1]);
+      children[0]->setPrevious(children[optAmt - 1]);
 
       // last option
-      optItems[optAmt - 1]->setNext(optItems[0]);
-      optItems[optAmt - 1]->setPrevious(optItems[optAmt - 2]);
+      children[optAmt - 1]->setNext(children[0]);
+      children[optAmt - 1]->setPrevious(children[optAmt - 2]);
 
-      setCurrentOption(optItems[0]);
+      setCurrentOption(children[0]);
       currentOption->focus();
 
     }
@@ -118,7 +123,7 @@ class Screen {
 
     void manageChildrenState() {
       for (int i = 0; i < optAmt; i++) {
-        optItems[i]->manageState();
+        children[i]->manageState();
       }
     }
 
@@ -131,15 +136,15 @@ class Screen {
 
       for (counter = 0; counter < optAmt; counter++) {
         // stops if it arrives in the current selected item
-        if (optItems[counter] == currentOption) { break; }
-        optItems[counter]->translateY(-200, -1);
+        if (children[counter] == currentOption) { break; }
+        children[counter]->translateY(-200, -1);
       }
 
       currentOption->select();
       counter++;
 
       while (counter < optAmt) {
-        optItems[counter]->translateY(520, 1);
+        children[counter]->translateY(520, 1);
         counter++;
       }
 
@@ -152,15 +157,15 @@ class Screen {
 
       for (counter = 0; counter < optAmt; counter++) {
         // stops if it arrives in the current selected item
-        if (optItems[counter] == currentOption) { break; }
-        optItems[counter]->translateY(optItems[counter]->getInitY(), 1);
+        if (children[counter] == currentOption) { break; }
+        children[counter]->translateY(children[counter]->getInitY(), 1);
       }
 
       currentOption->unselect();
       counter++;
 
       while (counter < optAmt) {
-        optItems[counter]->translateY(optItems[counter]->getInitY(), -1);
+        children[counter]->translateY(children[counter]->getInitY(), -1);
         counter++;
       }
 
@@ -174,7 +179,7 @@ class Screen {
       boolean isRendering = false;
 
       for (counter = 0; counter < optAmt; counter++) {
-        isRendering = optItems[counter]->isRendering();
+        isRendering = children[counter]->isRendering();
       }
 
       if (!isRendering) {

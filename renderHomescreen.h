@@ -7,6 +7,9 @@ Screen *homeScreen;
 
 void initializeHomeScreen(Adafruit_TFTLCD *tft) {
   homeScreen = new Screen(tft);
+
+  
+  
 }
 
 #endif

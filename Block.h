@@ -34,7 +34,7 @@ class Block {
     // animation attributes
     int translationToY = -1;
     int translationDirY = 0;
-    int translationStep = 20;
+    int translationStep = 30;
     int expansionHeightStep = 30;
     int expansionToHeight = -1;
 
@@ -54,6 +54,9 @@ class Block {
       initWidth = width;
       initHeight = height;
     }
+
+    // for array initialization
+    Block() {}
 
     void draw() {
       display->drawRect(x, y, width, height, borderColor);
@@ -145,7 +148,7 @@ class Block {
     }
 
     // BASIC ANIMATIONS
-    void startTranslationY(int toY, int dir) {
+    void translateY(int toY, int dir) {
       translationToY = toY;
       translationDirY = dir;
 

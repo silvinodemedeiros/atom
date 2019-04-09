@@ -1,6 +1,7 @@
 #ifndef CONTAINER_H
 #define CONTAINER_H
 
+#include <stdlib.h>
 #include "Block.h"
 
 class Container : public Block {
@@ -14,46 +15,54 @@ class Container : public Block {
     int activeColor = WHITE;
 
     // tree attributes
-    Block *children;
-    boolean hasChildren = false;
+    size_t chAmt = 0;
+    Block **chSet;
 
     // tmp container values
     int y0 = 58;
     int x0 = 6;
 
   public:
-    Container(Adafruit_TFTLCD *tft, int ux, int uy, int w, int h) : 
-    Block(tft, ux, uy, w, h) {}
+    Container(Adafruit_TFTLCD *tft, int ux, int uy, int w, int h) : Block(tft, ux, uy, w, h) {}
 
     void manageState() {
 
-      if (hasChildren) {
-        children->manageState();
+      for (size_t i = 0; i < chAmt; i++) {
+        chSet[i]->manageState();
       }
 
       Block::manageState();
-      
     }
 
     void appendChild(Block *child) {
-      children = child;
-      hasChildren = true;
-      children->draw();
+      Block **newChSet = new Block*[chAmt + 1];
+
+      size_t i = 0;
+      while (i < chAmt) { newChSet[i] = chSet[i]; i++; }
+      newChSet[i] = child;
+      
+      chSet = newChSet;
+      chAmt++;
     }
 
     void translateY(int toY, int dir) {
-      startTranslationY(toY, dir);
+      Block::translateY(toY, dir);
 
-      if (hasChildren) {
-        children->startTranslationY(toY + 10, dir);
+      for (size_t i = 0; i < chAmt; i++) {
+        chSet[i]->translateY(toY + 10, dir);
       }
     }
 
-    void removeChild() {
-      hasChildren = false;
-      children->erase();
-      delete children;
-    }
+
+
+
+
+
+
+
+
+
+
 
     /* CUSTOM SPECIFIC STUFF */
     
