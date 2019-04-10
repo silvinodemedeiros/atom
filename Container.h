@@ -1,7 +1,6 @@
 #ifndef CONTAINER_H
 #define CONTAINER_H
 
-#include <stdlib.h>
 #include "Block.h"
 
 class Container : public Block {
@@ -25,13 +24,15 @@ class Container : public Block {
   public:
     Container(Adafruit_TFTLCD *tft, int ux, int uy, int w, int h) : Block(tft, ux, uy, w, h) {}
 
-    void manageState() {
+    void manageState(boolean manageSelf = true) {
 
       for (size_t i = 0; i < chAmt; i++) {
         chSet[i]->manageState();
       }
 
-      Block::manageState();
+      if (manageSelf) {
+        Block::manageState();
+      }
     }
 
     void appendChild(Block *child) {
