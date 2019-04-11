@@ -14,7 +14,7 @@ class Container : public Block {
     int activeColor = WHITE;
 
     // tree attributes
-    size_t chAmt = 0;
+    int chAmt = 0;
     Block **chSet;
 
     // tmp container values
@@ -22,11 +22,12 @@ class Container : public Block {
     int x0 = 6;
 
   public:
-    Container(Adafruit_TFTLCD *tft, int ux, int uy, int w, int h) : Block(tft, ux, uy, w, h) {}
+    Container(int ux, int uy, int w, int h) : Block(ux, uy, w, h) {}
+    Container() : Block() {}
 
     void manageState(boolean manageSelf = true) {
 
-      for (size_t i = 0; i < chAmt; i++) {
+      for (int i = 0; i < chAmt; i++) {
         chSet[i]->manageState();
       }
 
@@ -35,27 +36,44 @@ class Container : public Block {
       }
     }
 
+    int getChildrenAmount() {
+      return chAmt;
+    }
+
     void appendChild(Block *child) {
       Block **newChSet = new Block*[chAmt + 1];
 
-      size_t i = 0;
+      int i = 0;
       while (i < chAmt) { newChSet[i] = chSet[i]; i++; }
+
+      child->setDisplay(display);
       newChSet[i] = child;
-      
       chSet = newChSet;
       chAmt++;
+
+      // TASK: adjust dimensions here
+      int gap = 6;
+      int totalGap = gap * (chAmt - 1);
+      int itemHeight = (height - totalGap) / chAmt;
+      int currentY = y0;
+
+      for (int i = 0; i < chAmt; i++) {
+        chSet[i]->setX(x);
+        chSet[i]->setY(currentY);
+        chSet[i]->setWidth(width);
+        chSet[i]->setHeight(itemHeight);
+
+        currentY += itemHeight + gap;
+      }
     }
 
     void translateY(int toY, int dir) {
       Block::translateY(toY, dir);
 
-      for (size_t i = 0; i < chAmt; i++) {
+      for (int i = 0; i < chAmt; i++) {
         chSet[i]->translateY(toY + 10, dir);
       }
     }
-
-
-
 
 
 
@@ -91,14 +109,6 @@ class Container : public Block {
 
     void setNext(Container *container) {
       next = container;
-    }
-
-    void select() {
-      translateY(y0, -1);
-    }
-
-    void unselect() {
-      translateY(initY, 1);
     }
 };
 

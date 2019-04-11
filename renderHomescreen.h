@@ -8,23 +8,13 @@ Screen *homeScreen;
 
 void initializeHomeScreen(Adafruit_TFTLCD *tft) {
 
+  int optAmt = 3;
+
   homeScreen = new Screen(tft);
 
-  const int optY0 = 58;
-  const int optX0 = 6;
-  const int optGap = 6;
-  const int optAmt = 5;
-  int menuContainerW = 228;
-  int menuContainerH = 46;
-  int currentY = optY0;
-
-  for (int counter = 0; counter < optAmt; counter++) {
-    
-    Container *child = new Container(tft, optX0, currentY, menuContainerW, menuContainerH);
-
+  for (int counter = 0; counter < optAmt; counter++) {    
+    Container *child = new Container();
     homeScreen->appendChild(child);
-
-    currentY += menuContainerH + optGap;
   }
   
 }

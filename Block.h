@@ -39,12 +39,11 @@ class Block {
     int expansionToHeight = -1;
 
     // tmp container values
-    int y0 = 58;
-    int x0 = 6;
+    // int y0 = 58;
+    // int x0 = 6;
 
   public:
-    Block(Adafruit_TFTLCD *tft, int ux, int uy, int w, int h) {
-      display = tft;
+    Block(int ux, int uy, int w, int h) {
       x = ux;
       y = uy;
       initX = x;
@@ -96,6 +95,10 @@ class Block {
 
     int getY() {
       return y;
+    }
+    
+    void setDisplay(Adafruit_TFTLCD *tft) {
+      display = tft;
     }
     
     void setX (int nx) {

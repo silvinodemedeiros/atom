@@ -58,7 +58,7 @@ void loop() {
 			}
 		}
 
-		if (inputLock == false || !homeScreen->isInputWaiting()) {
+		if (inputLock == false) {
 			homeScreen->manageState();
 		}
 	}
