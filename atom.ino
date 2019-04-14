@@ -1,8 +1,6 @@
 #include <SPFD5408_Adafruit_GFX.h>
 #include <SPFD5408_Adafruit_TFTLCD.h>
 
-long playerStallTime = 33;
-unsigned long playerStallPrev = 0;
 #include "constants.h"							// useful project constants
 Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 

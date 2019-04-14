@@ -5,7 +5,7 @@
 
 class Container : public Block {
 
-  private:
+  protected:
     boolean active = false;
     Container *previous;
     Container *next;
@@ -16,10 +16,6 @@ class Container : public Block {
     // tree attributes
     int chAmt = 0;
     Block **chSet;
-
-    // tmp container values
-    int y0 = 58;
-    int x0 = 6;
 
   public:
     Container(int ux, int uy, int w, int h) : Block(ux, uy, w, h) {}
@@ -50,21 +46,6 @@ class Container : public Block {
       newChSet[i] = child;
       chSet = newChSet;
       chAmt++;
-
-      // TASK: adjust dimensions here
-      int gap = 6;
-      int totalGap = gap * (chAmt - 1);
-      int itemHeight = (height - totalGap) / chAmt;
-      int currentY = y0;
-
-      for (int i = 0; i < chAmt; i++) {
-        chSet[i]->setX(x);
-        chSet[i]->setY(currentY);
-        chSet[i]->setWidth(width);
-        chSet[i]->setHeight(itemHeight);
-
-        currentY += itemHeight + gap;
-      }
     }
 
     void translateY(int toY, int dir) {
@@ -73,42 +54,6 @@ class Container : public Block {
       for (int i = 0; i < chAmt; i++) {
         chSet[i]->translateY(toY + 10, dir);
       }
-    }
-
-
-
-
-
-
-
-
-
-    /* CUSTOM SPECIFIC STUFF */
-    
-    void focus() {
-      setBorderColor(activeColor);
-      draw();
-    }
-
-    void unfocus() {
-      setBorderColor(defaultColor);
-      draw();
-    }
-
-    Container* getPrevious() {
-      return previous;
-    }
-
-    Container* getNext() {
-      return next;
-    }
-    
-    void setPrevious(Container *container) {
-      previous = container;
-    }
-
-    void setNext(Container *container) {
-      next = container;
     }
 };
 

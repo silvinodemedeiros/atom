@@ -1,6 +1,9 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include <SPFD5408_Adafruit_GFX.h>
+#include <SPFD5408_Adafruit_TFTLCD.h>
+
 class Block {
 
   protected:

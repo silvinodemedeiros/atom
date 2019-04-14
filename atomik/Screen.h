@@ -1,30 +1,29 @@
 #ifndef MENUSCREEN_H
 #define MENUSCREEN_H
 
-#include "Container.h"
+#include "Column.h"
 
 class Screen {
-private:
-  static const int optAmt = 5;
-  const int optY0 = 58;
-  const int optX0 = 6;
-  const int bgColor = MAINBG;
-  int wrapperW = 228;
-  int wrapperH = 250;
-  Container *wrapper;
-  Adafruit_TFTLCD *display;
-  long inputWait = 0;
+  private:
+    const int marginH = 5;
+    const int marginV = 8;
+    const int bgColor = MAINBG;
+    int wrapperW = WIDTH - marginH * 2;
+    int wrapperH = HEIGHT - marginV * 2;
+    Column *wrapper;
+    Adafruit_TFTLCD *display;
+    long inputWait = 0;
 
-  fillScreen(int color) {
-    display->fillScreen(color);
-  };
+    fillScreen(int color) {
+      display->fillScreen(color);
+    };
 
-  enum ScreenState {
-    INITIAL,
-    IS_UPDATING
-  };
+    enum ScreenState {
+      INITIAL,
+      IS_UPDATING
+    };
 
-  ScreenState state = INITIAL;
+    ScreenState state = INITIAL;
 
   public:
     Screen(Adafruit_TFTLCD *tft) {
@@ -32,11 +31,10 @@ private:
       display = tft;
       long timeStamp = 0;
 
-      wrapper = new Container(optX0, optY0, wrapperW, wrapperH);
+      wrapper = new Column(marginH, marginV, wrapperW, wrapperH);
       wrapper->setDisplay(tft);
       
       fillScreen(bgColor);
-
     }
 
     void manageState() {
