@@ -5,8 +5,8 @@
 
 class Screen {
   private:
-    const int marginH = 5;
-    const int marginV = 8;
+    const int marginH = 20;
+    const int marginV = 40;
     const int bgColor = MAINBG;
     int wrapperW = WIDTH - marginH * 2;
     int wrapperH = HEIGHT - marginV * 2;

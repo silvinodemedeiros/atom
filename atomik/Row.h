@@ -9,10 +9,13 @@ class Row : public Container {
     Row(int ux, int uy, int w, int h) : Container(ux, uy, w, h) {}
     Row() : Container() {}
 
-    void appendChild(Block *child) {
+    void appendChild(Container *child) {
       Container::appendChild(child);
 
-      int gap = 6;
+      adjustChildrenDimensions();
+    }
+
+    void adjustChildrenDimensions() {
       int totalGap = gap * (chAmt - 1);
       int itemWidth = (width - totalGap) / chAmt;
       int currentX = x;
@@ -24,6 +27,10 @@ class Row : public Container {
         chSet[i]->setHeight(height);
 
         currentX += itemWidth + gap;
+
+        if (chSet[i]->getChildrenAmount() > 0) {
+          chSet[i]->adjustChildrenDimensions();
+        }
       }
     }
 };

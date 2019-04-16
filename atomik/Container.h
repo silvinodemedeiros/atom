@@ -6,16 +6,20 @@
 class Container : public Block {
 
   protected:
-    boolean active = false;
-    Container *previous;
-    Container *next;
-
     int defaultColor = DEFAULTGREEN;
     int activeColor = WHITE;
 
     // tree attributes
     int chAmt = 0;
-    Block **chSet;
+
+    /* 
+      NEED FIX:
+      Children are specified with Container so derived methods (like ajustChildrenDimensions)
+      will be invoked through the Container implementation
+    */
+    Container **chSet;
+
+    int gap = 6;
 
   public:
     Container(int ux, int uy, int w, int h) : Block(ux, uy, w, h) {}
@@ -36,8 +40,8 @@ class Container : public Block {
       return chAmt;
     }
 
-    void appendChild(Block *child) {
-      Block **newChSet = new Block*[chAmt + 1];
+    void appendChild(Container *child) {
+      Container **newChSet = new Container*[chAmt + 1];
 
       int i = 0;
       while (i < chAmt) { newChSet[i] = chSet[i]; i++; }
@@ -46,6 +50,26 @@ class Container : public Block {
       newChSet[i] = child;
       chSet = newChSet;
       chAmt++;
+
+      adjustChildrenDimensions();
+    }
+
+    void adjustChildrenDimensions() {
+      int totalGap = gap * (chAmt - 1);
+      int currentX = x;
+
+      for (int i = 0; i < chAmt; i++) {
+        chSet[i]->setX(currentX);
+        chSet[i]->setY(y);
+        chSet[i]->setWidth(width);
+        chSet[i]->setHeight(height);
+
+        currentX += width + gap;
+
+        if (chSet[i]->getChildrenAmount() > 0) {
+          chSet[i]->adjustChildrenDimensions();
+        }
+      }
     }
 
     void translateY(int toY, int dir) {

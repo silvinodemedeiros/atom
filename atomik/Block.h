@@ -41,10 +41,6 @@ class Block {
     int expansionHeightStep = 30;
     int expansionToHeight = -1;
 
-    // tmp container values
-    // int y0 = 58;
-    // int x0 = 6;
-
   public:
     Block(int ux, int uy, int w, int h) {
       x = ux;
