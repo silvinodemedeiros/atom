@@ -3,7 +3,7 @@
 
 #include "atomik/Screen.h"
 #include "atomik/Container.h"
-#include "atomik/Row.h"
+#include "atomik/StyleTypes.h"
 
 Screen *homeScreen;
 
@@ -14,13 +14,7 @@ void initializeHomeScreen(Adafruit_TFTLCD *tft) {
   homeScreen = new Screen(tft);
 
   for (int i = 0; i < amount; i++) {
-    Row *child = new Row();
-
-    for (int j = 0; j < 3; j++) {
-      Container *grandChild = new Container();
-      child->appendChild(grandChild);
-    }
-
+    Container *child = new Container();
     homeScreen->appendChild(child);
   }
   

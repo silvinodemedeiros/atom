@@ -1,7 +1,8 @@
 #ifndef MENUSCREEN_H
 #define MENUSCREEN_H
 
-#include "Column.h"
+#include "Container.h"
+#include "StyleTypes.h"
 
 class Screen {
   private:
@@ -10,7 +11,7 @@ class Screen {
     const int bgColor = MAINBG;
     int wrapperW = WIDTH - marginH * 2;
     int wrapperH = HEIGHT - marginV * 2;
-    Column *wrapper;
+    Container *wrapper;
     Adafruit_TFTLCD *display;
     long inputWait = 0;
 
@@ -26,12 +27,13 @@ class Screen {
     ScreenState state = INITIAL;
 
   public:
-    Screen(Adafruit_TFTLCD *tft) {
+    Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
       boolean isActive = false;
       display = tft;
       long timeStamp = 0;
 
-      wrapper = new Column(marginH, marginV, wrapperW, wrapperH);
+      wrapper = new Container(marginH, marginV, wrapperW, wrapperH);
+      wrapper->style->display = displayStyle;
       wrapper->setDisplay(tft);
       
       fillScreen(bgColor);

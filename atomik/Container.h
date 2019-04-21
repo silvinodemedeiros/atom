@@ -1,5 +1,10 @@
+
 #ifndef CONTAINER_H
 #define CONTAINER_H
+
+#include "Style.h"
+#include "StyleManager.h"
+#include "StyleTypes.h"
 
 #include "Block.h"
 
@@ -9,19 +14,13 @@ class Container : public Block {
     int defaultColor = DEFAULTGREEN;
     int activeColor = WHITE;
 
-    // tree attributes
-    int chAmt = 0;
-
-    /* 
-      NEED FIX:
-      Children are specified with Container so derived methods (like ajustChildrenDimensions)
-      will be invoked through the Container implementation
-    */
-    Container **chSet;
-
-    int gap = 6;
-
   public:
+
+    // PUBLIC TEMP: tree attributes
+    Container **chSet;
+    int chAmt = 0;
+    StyleManager *styleMgr = new StyleManager();
+
     Container(int ux, int uy, int w, int h) : Block(ux, uy, w, h) {}
     Container() : Block() {}
 
@@ -51,28 +50,38 @@ class Container : public Block {
       chSet = newChSet;
       chAmt++;
 
-      adjustChildrenDimensions();
+      configureChildren();
     }
 
-    void adjustChildrenDimensions() {
-      int totalGap = gap * (chAmt - 1);
-      int currentX = x;
+    void configureChildren() {
+
+      int currentY = style->y;
 
       for (int i = 0; i < chAmt; i++) {
-        chSet[i]->setX(currentX);
-        chSet[i]->setY(y);
-        chSet[i]->setWidth(width);
-        chSet[i]->setHeight(height);
 
-        currentX += width + gap;
-
+        chSet[i]->style = styleMgr->getChildrenStyles(style, chAmt);
+        updateNextChildPosition();
+        
         if (chSet[i]->getChildrenAmount() > 0) {
-          chSet[i]->adjustChildrenDimensions();
+          chSet[i]->configureChildren();
         }
       }
     }
 
-    void translateY(int toY, int dir) {
+    void updateNextChildPosition() {
+      switch (style->display) {
+        case COLUMN:
+          style->nextAvailableY = ((style->height - style->gap * (chAmt - 1)) / chAmt) + style->gap;
+          break;
+        case NONE:
+          style->nextAvailableY = style->height + style->gap;
+          break;
+      }
+    }
+
+        void
+        translateY(int toY, int dir)
+    {
       Block::translateY(toY, dir);
 
       for (int i = 0; i < chAmt; i++) {

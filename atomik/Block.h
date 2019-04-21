@@ -3,6 +3,7 @@
 
 #include <SPFD5408_Adafruit_GFX.h>
 #include <SPFD5408_Adafruit_TFTLCD.h>
+#include "Style.h"
 
 class Block {
 
@@ -21,18 +22,6 @@ class Block {
     };
 
     BlockState state = INITIAL;
-
-    // static attributes
-    int x = 0;
-    int initX = 0;
-    int y = 0;
-    int initY = 0;
-    int width = 0;
-    int initWidth = 0;
-    int height = 0;
-    int initHeight = 0;
-    int borderColor = DEFAULTGREEN;
-    int bgColor = MAINBG;
     
     // animation attributes
     int translationToY = -1;
@@ -41,59 +30,67 @@ class Block {
     int expansionHeightStep = 30;
     int expansionToHeight = -1;
 
+    int BlockId = 0;
+
   public:
+
+    Style *style;
+
     Block(int ux, int uy, int w, int h) {
-      x = ux;
-      y = uy;
-      initX = x;
-      initY = y;
-      width = w;
-      height = h;
-      initWidth = width;
-      initHeight = height;
+      style = new Style();
+
+      style->x = ux;
+      style->y = uy;
+      style->nextAvailableY = uy;
+      style->initX = ux;
+      style->initY = uy;
+      style->width = w;
+      style->height = h;
+      style->initWidth = w;
+      style->initHeight = h;
     }
 
     // for array initialization
     Block() {}
 
     void draw() {
-      display->drawRect(x, y, width, height, borderColor);
+      display->drawRect(style->x, style->y, style->width, style->height, style->borderColor);
     }
 
     void erase() {
-      display->drawRect(x, y, width, height, bgColor);
+      display->drawRect(style->x, style->y, style->width, style->height, style->bgColor);
     }
 
     int getHeight() {
-      return height;
+      return style->height;
     }
 
     int getWidth() {
-      return width;
+      return style->width;
     }
 
     int getInitHeight() {
-      return initHeight;
+      return style->initHeight;
     }
 
     int getInitWidth() {
-      return initWidth;
+      return style->initWidth;
     }
 
     int getInitY() {
-      return initY;
+      return style->initY;
     }
 
     int getInitX() {
-      return initX;
+      return style->initX;
     }
     
     int getX () {
-      return x;
+      return style->x;
     }
 
     int getY() {
-      return y;
+      return style->y;
     }
     
     void setDisplay(Adafruit_TFTLCD *tft) {
@@ -101,23 +98,23 @@ class Block {
     }
     
     void setX (int nx) {
-      x = nx;
+      style->x = nx;
     }
 
     void setY(int ny) {
-      y = ny;
+      style->y = ny;
     }
 
     void setWidth(int w) {
-      width = w;
+      style->width = w;
     }
 
     void setHeight(int h) {
-      height = h;
+      style->height = h;
     }
 
     void setBorderColor(int bc) {
-      borderColor = bc;
+      style->borderColor = bc;
     }
 
     void setState(BlockState nextState) {
@@ -138,7 +135,7 @@ class Block {
           stepTranslationY();
           break;
         case IS_EXPANDING_HEIGHT:
-          stepExpansionHeight();
+          // stepExpansionHeight();
           break;
         case DONE_RENDER:
           setState(INITIAL);
@@ -164,11 +161,11 @@ class Block {
       // downward translation
       if (translationDirY == 1) {
 
-        y += translationStep;
+        style->y += translationStep;
 
         // is animation done?
-        if (y > translationToY) {
-          y = translationToY;
+        if (style->y > translationToY) {
+          style->y = translationToY;
           translationToY = -1;
           translationDirY = 0;
           
@@ -178,11 +175,11 @@ class Block {
 
       // upwards translation
       else {
-        y -= translationStep;
+        style->y -= translationStep;
 
         // is animation done?
-        if (y < translationToY) {
-          y = translationToY;
+        if (style->y < translationToY) {
+          style->y = translationToY;
           translationToY = -1;
           translationDirY = 0;
           
@@ -193,39 +190,39 @@ class Block {
       draw();
     }
 
-    void startExpansionHeight(int toHeight) {
-      expansionToHeight = toHeight;
-      setState(IS_EXPANDING_HEIGHT);
-    }
+    // void startExpansionHeight(int toHeight) {
+    //   expansionToHeight = toHeight;
+    //   setState(IS_EXPANDING_HEIGHT);
+    // }
 
-    void stepExpansionHeight () {
+    // void stepExpansionHeight () {
 
-      erase();
+    //   erase();
 
-      height += expansionHeightStep;
+    //   height += expansionHeightStep;
 
-      if (height >= expansionToHeight) {
-        height = expansionToHeight;
-        expansionToHeight = -1;
+    //   if (height >= expansionToHeight) {
+    //     height = expansionToHeight;
+    //     expansionToHeight = -1;
 
-        setState(DONE_RENDER);
-      }
+    //     setState(DONE_RENDER);
+    //   }
 
-      draw();
-    }
+    //   draw();
+    // }
 
-    boolean shrinkHeight () {
+    // boolean shrinkHeight () {
 
-      height -= expansionHeightStep;
+    //   height -= expansionHeightStep;
     
-      if (height < initHeight) {
-        height = initHeight;
-        return true;
-      }
+    //   if (height < initHeight) {
+    //     height = initHeight;
+    //     return true;
+    //   }
 
-      return false;
+    //   return false;
 
-    }
+    // }
 
 };
 

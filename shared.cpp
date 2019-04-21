@@ -1,8 +1,8 @@
-#include "colors.h"
-#include "states.h"
-
 #ifndef SHARED_CPP
 #define SHARED_CPP
+
+#include "colors.h"
+#include "states.h"
 
 int currentBg = WHITE;
 bool hasLoaded = false;
