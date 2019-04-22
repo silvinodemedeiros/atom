@@ -56,36 +56,40 @@ class Container : public Block {
     void configureChildren() {
 
       for (int i = 0; i < chAmt; i++) {
-        chSet[i]->style = styleMgr->getChildrenStyles(style, chAmt);
+        chSet[i]->style = styleMgr->getChildrenStyles(this->style, chAmt);
       }
 
       repositionChildren();
-    }
-
-    void repositionChildren() {
-      int currentY = style->y;
-      int currentX = style->x;
-
+      
       for (int i = 0; i < chAmt; i++) {
-
-        switch (style->display) {
-          case COLUMN:
-            chSet[i]->style->y = currentY;
-            currentY += chSet[i]->style->height + style->gap;
-            break;
-          case ROW:
-            chSet[i]->style->x = currentX;
-            currentX += chSet[i]->style->width + style->gap;
-            break;
-          case NONE:
-            chSet[i]->style->y = currentY;
-            currentY += style->height + style->gap;
-            break;
-        }
-        
         if (chSet[i]->getChildrenAmount() > 0) {
           chSet[i]->configureChildren();
         }
+      }
+    }
+
+    void repositionChildren() {
+      int currentY = this->style->y;
+      int currentX = this->style->x;
+
+      for (int i = 0; i < chAmt; i++) {
+
+        switch (this->style->display)
+        {
+        case COLUMN:
+          chSet[i]->style->y = currentY;
+          currentY += chSet[i]->style->height + this->style->gap;
+          break;
+        case ROW:
+          chSet[i]->style->x = currentX;
+          currentX += chSet[i]->style->width + this->style->gap;
+          break;
+        case NONE:
+          chSet[i]->style->y = currentY;
+          currentY += this->style->height + this->style->gap;
+          break;
+        }
+        
       }
     }
 
