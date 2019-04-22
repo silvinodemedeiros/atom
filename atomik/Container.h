@@ -55,12 +55,33 @@ class Container : public Block {
 
     void configureChildren() {
 
+      for (int i = 0; i < chAmt; i++) {
+        chSet[i]->style = styleMgr->getChildrenStyles(style, chAmt);
+      }
+
+      repositionChildren();
+    }
+
+    void repositionChildren() {
       int currentY = style->y;
+      int currentX = style->x;
 
       for (int i = 0; i < chAmt; i++) {
 
-        chSet[i]->style = styleMgr->getChildrenStyles(style, chAmt);
-        updateNextChildPosition();
+        switch (style->display) {
+          case COLUMN:
+            chSet[i]->style->y = currentY;
+            currentY += chSet[i]->style->height + style->gap;
+            break;
+          case ROW:
+            chSet[i]->style->x = currentX;
+            currentX += chSet[i]->style->width + style->gap;
+            break;
+          case NONE:
+            chSet[i]->style->y = currentY;
+            currentY += style->height + style->gap;
+            break;
+        }
         
         if (chSet[i]->getChildrenAmount() > 0) {
           chSet[i]->configureChildren();
@@ -68,20 +89,7 @@ class Container : public Block {
       }
     }
 
-    void updateNextChildPosition() {
-      switch (style->display) {
-        case COLUMN:
-          style->nextAvailableY = ((style->height - style->gap * (chAmt - 1)) / chAmt) + style->gap;
-          break;
-        case NONE:
-          style->nextAvailableY = style->height + style->gap;
-          break;
-      }
-    }
-
-        void
-        translateY(int toY, int dir)
-    {
+    void translateY(int toY, int dir) {
       Block::translateY(toY, dir);
 
       for (int i = 0; i < chAmt; i++) {

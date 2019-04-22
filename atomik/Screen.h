@@ -34,6 +34,7 @@ class Screen {
 
       wrapper = new Container(marginH, marginV, wrapperW, wrapperH);
       wrapper->style->display = displayStyle;
+      wrapper->style->nextAvailableY = wrapper->style->y;
       wrapper->setDisplay(tft);
       
       fillScreen(bgColor);
