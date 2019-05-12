@@ -6,12 +6,13 @@
 
 class Screen {
   private:
-    const int marginH = 20;
-    const int marginV = 40;
+    const int marginH = 15;
+    const int marginV = 20;
     const int bgColor = MAINBG;
     int wrapperW = WIDTH - marginH * 2;
+    // int wrapperW = 200;
+    // int wrapperH = 64 * 2;
     int wrapperH = HEIGHT - marginV * 2;
-    Container *wrapper;
     Adafruit_TFTLCD *display;
     long inputWait = 0;
 
@@ -27,6 +28,8 @@ class Screen {
     ScreenState state = INITIAL;
 
   public:
+    Container *wrapper;
+
     Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
       boolean isActive = false;
       display = tft;
@@ -34,7 +37,7 @@ class Screen {
 
       wrapper = new Container(marginH, marginV, wrapperW, wrapperH);
       wrapper->style->display = displayStyle;
-      wrapper->style->nextAvailableY = wrapper->style->y;
+      wrapper->style->visibility = false;
       wrapper->setDisplay(tft);
       
       fillScreen(bgColor);
@@ -80,7 +83,7 @@ class Screen {
     }
 
     void manageChildrenState() {
-      wrapper->manageState(false);
+      wrapper->manageState();
     }
 };
 

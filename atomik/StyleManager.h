@@ -9,21 +9,23 @@ class StyleManager {
   public:
     StyleManager() {}
 
-    Style* getChildrenStyles(Style *parentStyles, int childrenAmount) {
+    Style* getChildrenDimensions(Style *parentStyles, int childrenAmount) {
       int totalGap = parentStyles->gap * (childrenAmount - 1);
-      Style *newStyle = new Style();
+      Style *childStyle = new Style();
+
+      parentStyles->visibility = false;
 
       // IF CONTAINER RENDER MODE IS COLUMN
       if (parentStyles->display == COLUMN) {
 
         int itemHeight = (parentStyles->height - totalGap) / childrenAmount;
 
-        newStyle->x = parentStyles->x;
-        newStyle->y = parentStyles->nextAvailableY;
-        newStyle->width = parentStyles->width;
-        newStyle->height = itemHeight;
+        childStyle->x = parentStyles->x;
+        childStyle->y = parentStyles->nextAvailableY;
+        childStyle->width = parentStyles->width;
+        childStyle->height = itemHeight;
 
-        return newStyle;
+        return childStyle;
       }
 
       // IF CONTAINER RENDER MODE IS ROW
@@ -31,21 +33,21 @@ class StyleManager {
 
         int itemWidth = (parentStyles->width - totalGap) / childrenAmount;
 
-        newStyle->x = parentStyles->x;
-        newStyle->y = parentStyles->y;
-        newStyle->width = itemWidth;
-        newStyle->height = parentStyles->height;
+        childStyle->x = parentStyles->x;
+        childStyle->y = parentStyles->y;
+        childStyle->width = itemWidth;
+        childStyle->height = parentStyles->height;
 
-        return newStyle;
+        return childStyle;
       }
 
       // IF IT'S NONE
-      newStyle->x = parentStyles->x;
-      newStyle->y = parentStyles->nextAvailableY;
-      newStyle->width = parentStyles->width;
-      newStyle->height = parentStyles->height;
+      childStyle->x = parentStyles->x;
+      childStyle->y = parentStyles->nextAvailableY;
+      childStyle->width = parentStyles->width;
+      childStyle->height = parentStyles->height;
 
-      return newStyle;
+      return childStyle;
     }
 };
 

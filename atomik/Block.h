@@ -17,6 +17,7 @@ class Block {
       IS_TRANSITIONING_X,
       IS_EXPANDING_HEIGHT,
       IS_EXPANDING_WIDTH,
+      IS_SHRINKING_WIDTH,
       IS_SHRINKING_HEIGHT,
       DONE_RENDER
     };
@@ -54,7 +55,9 @@ class Block {
     Block() {}
 
     void draw() {
-      display->drawRect(style->x, style->y, style->width, style->height, style->borderColor);
+      if (style->visibility) {
+        display->drawRect(style->x, style->y, style->width, style->height, style->borderColor);
+      }
     }
 
     void erase() {

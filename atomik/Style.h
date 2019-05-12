@@ -20,6 +20,7 @@ class Style {
     int borderColor = DEFAULTGREEN;
     int bgColor = MAINBG;
     DisplayStyle display = NONE;
+    bool visibility = true;
 
     Style() {}
   

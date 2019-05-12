@@ -17,6 +17,7 @@ bool isInputReleased () {
 }
 
 void setup() {
+	srand((unsigned)millis());
 	tft.reset();
 	tft.begin(0x9341);
 	tft.setRotation(rot);
@@ -28,9 +29,13 @@ void setup() {
 	pinMode(fw, INPUT_PULLUP);
 	pinMode(sel, INPUT_PULLUP);
 	pinMode(ret, INPUT_PULLUP);
+	
+	randomSeed(analogRead(0));
 }
 
 void loop() {
+
+
 	//read the pushbutton value into a variable
 	bwInput = digitalRead(bw);
 	fwInput = digitalRead(fw);
