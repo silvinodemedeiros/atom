@@ -17,10 +17,14 @@ class Style {
     int gap = 6;
     int height = 0;
     int initHeight = 0;
-    int borderColor = DEFAULTGREEN;
-    int bgColor = MAINBG;
+    int childrenFill = 0;
+    int fill = 1;
+
     DisplayStyle display = NONE;
     bool visibility = true;
+
+    int borderColor = DEFAULTGREEN;
+    int bgColor = MAINBG;
 
     Style() {}
   

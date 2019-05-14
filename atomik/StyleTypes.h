@@ -4,7 +4,8 @@
 enum DisplayStyle {
   COLUMN,
   ROW,
-  FILL,
+  COLUMN_FILL,
+  ROW_FILL,
   NONE
 };
 

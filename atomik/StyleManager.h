@@ -14,14 +14,14 @@ class StyleManager {
       Style *childStyle = new Style();
 
       parentStyles->visibility = false;
+      childStyle->x = parentStyles->x;
+      childStyle->y = parentStyles->y;
 
       // IF CONTAINER RENDER MODE IS COLUMN
       if (parentStyles->display == COLUMN) {
 
         int itemHeight = (parentStyles->height - totalGap) / childrenAmount;
 
-        childStyle->x = parentStyles->x;
-        childStyle->y = parentStyles->nextAvailableY;
         childStyle->width = parentStyles->width;
         childStyle->height = itemHeight;
 
@@ -33,8 +33,6 @@ class StyleManager {
 
         int itemWidth = (parentStyles->width - totalGap) / childrenAmount;
 
-        childStyle->x = parentStyles->x;
-        childStyle->y = parentStyles->y;
         childStyle->width = itemWidth;
         childStyle->height = parentStyles->height;
 
@@ -42,8 +40,6 @@ class StyleManager {
       }
 
       // IF IT'S NONE
-      childStyle->x = parentStyles->x;
-      childStyle->y = parentStyles->nextAvailableY;
       childStyle->width = parentStyles->width;
       childStyle->height = parentStyles->height;
 

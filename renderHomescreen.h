@@ -11,20 +11,26 @@ void initializeHomeScreen(Adafruit_TFTLCD *tft) {
 
   int amount = 5;
   // String items[amount] = {"Item 1", "Item 2", "Item 3"};
-  homeScreen = new Screen(tft, COLUMN);
+  homeScreen = new Screen(tft);
 
-  for (int i = 0; i < amount; i++) {
+  Container *root = new Container();
+  root->style->display = ROW_FILL;
+  homeScreen->appendChild(root);
 
-    homeScreen->appendChild(new Container(););
+  Container *firstChild = new Container();
+  firstChild->style->fill = 5;
+  root->appendChild(firstChild);
 
-    int gcAmt = random(1, 5);
+  Container *secondChild = new Container();
+  secondChild->style->display = COLUMN;
+  secondChild->style->fill = 3;
+  root->appendChild(secondChild);
 
-    child->style->display = ROW;
-    child->style->visibility = false;
-    for (int j = 0; j < gcAmt; j++) {
-      child->appendChild(new Container(););
-    }
-  }
+  secondChild->appendChild(new Container());
+  secondChild->appendChild(new Container());
+  secondChild->appendChild(new Container());
+  secondChild->appendChild(new Container());
+  secondChild->appendChild(new Container());
   
 }
 

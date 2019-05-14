@@ -40,12 +40,14 @@ class Container : public Block {
     void appendChild(Container *child) {
       Container **newChSet = new Container*[chAmt + 1];
 
+
       int i = 0;
       while (i < chAmt) {
         newChSet[i] = chSet[i];
-        
         i++;
       }
+
+      this->style->childrenFill += child->style->fill;
 
       child->setDisplay(display);
       newChSet[i] = child;
@@ -56,43 +58,59 @@ class Container : public Block {
     }
 
     void configureChildren() {
+
       int currentY = this->style->y;
       int currentX = this->style->x;
 
+      int totalGap = this->style->gap * (chAmt - 1);
+      int unitFillHeight = (HEIGHT - totalGap - 40) / this->style->childrenFill;
+      int unitFillWidth = (WIDTH - totalGap - 30) / this->style->childrenFill;
+
       for (int i = 0; i < chAmt; i++) {
-        Style *oldStyle = chSet[i]->style;
-        chSet[i]->style = styleMgr->getChildrenDimensions(this->style, chAmt);
-        chSet[i]->style->display = oldStyle->display;
+        
+        Container *child = chSet[i];
+
+        Style oldStyle = *child->style;
+        child->style = styleMgr->getChildrenDimensions(this->style, chAmt);
+        child->style->fill = oldStyle.fill;
+        child->style->display = oldStyle.display;
 
         switch (this->style->display) {
           case COLUMN:
-            chSet[i]->style->y = currentY;
-            currentY += chSet[i]->style->height + this->style->gap;
-            break;
+            child->style->y = currentY;
+            currentY += child->style->height + this->style->gap;
+          break;
+
           case ROW:
-            chSet[i]->style->x = currentX;
-            currentX += chSet[i]->style->width + this->style->gap;
-            break;
+            child->style->x = currentX;
+            currentX += child->style->width + this->style->gap;
+          break;
+
+          case COLUMN_FILL:
+            child->style->width = this->style->width;
+            child->style->height = (child->style->fill * unitFillHeight) + (child->style->fill - 1) * this->style->gap - (this->style->childrenFill * 2);
+
+            child->style->y = currentY;
+            currentY += child->style->height + this->style->gap;
+          break;
+
+          case ROW_FILL:
+            child->style->height = this->style->height;
+            child->style->width = (child->style->fill * unitFillWidth) + (child->style->fill - 1) * this->style->gap - (this->style->childrenFill * 2);
+
+            child->style->x = currentX;
+            currentX += child->style->width + this->style->gap;
+          break;
+
           case NONE:
-            chSet[i]->style->y = currentY;
+            child->style->y = currentY;
             currentY += this->style->height + this->style->gap;
-            break;  
+          break;
         }
         
-        if (chSet[i]->getChildrenAmount() > 0) {
-          chSet[i]->configureChildren();
+        if (child->getChildrenAmount() > 0) {
+          child->configureChildren();
         }
-      }
-
-      
-      for (int i = 0; i < chAmt; i++) {
-      }
-    }
-
-    void repositionChildren() {
-
-      for (int i = 0; i < chAmt; i++) {
-        
       }
     }
 

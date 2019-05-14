@@ -10,8 +10,6 @@ class Screen {
     const int marginV = 20;
     const int bgColor = MAINBG;
     int wrapperW = WIDTH - marginH * 2;
-    // int wrapperW = 200;
-    // int wrapperH = 64 * 2;
     int wrapperH = HEIGHT - marginV * 2;
     Adafruit_TFTLCD *display;
     long inputWait = 0;
