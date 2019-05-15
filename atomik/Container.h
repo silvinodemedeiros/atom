@@ -77,16 +77,6 @@ class Container : public Block {
 
         switch (this->style->display) {
           case COLUMN:
-            child->style->y = currentY;
-            currentY += child->style->height + this->style->gap;
-          break;
-
-          case ROW:
-            child->style->x = currentX;
-            currentX += child->style->width + this->style->gap;
-          break;
-
-          case COLUMN_FILL:
             child->style->width = this->style->width;
             child->style->height = (child->style->fill * unitFillHeight) + (child->style->fill - 1) * this->style->gap - (this->style->childrenFill * 2);
 
@@ -94,7 +84,7 @@ class Container : public Block {
             currentY += child->style->height + this->style->gap;
           break;
 
-          case ROW_FILL:
+          case ROW:
             child->style->height = this->style->height;
             child->style->width = (child->style->fill * unitFillWidth) + (child->style->fill - 1) * this->style->gap - (this->style->childrenFill * 2);
 
@@ -116,11 +106,12 @@ class Container : public Block {
 
     void translateY(int toY, int dir) {
       Block::translateY(toY, dir);
-
+      
       for (int i = 0; i < chAmt; i++) {
         chSet[i]->translateY(toY + 10, dir);
       }
     }
+
 };
 
 #endif

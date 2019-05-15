@@ -136,6 +136,7 @@ class Block {
       switch(state) {
         case IS_TRANSITIONING_Y:
           stepTranslationY();
+          Serial.println("TRANSITIONING Y");
           break;
         case IS_EXPANDING_HEIGHT:
           // stepExpansionHeight();

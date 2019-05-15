@@ -1,6 +1,7 @@
 #ifndef MENUSCREEN_H
 #define MENUSCREEN_H
 
+#include "../NavigationContainer.h"
 #include "Container.h"
 #include "StyleTypes.h"
 
@@ -12,7 +13,8 @@ class Screen {
     int wrapperW = WIDTH - marginH * 2;
     int wrapperH = HEIGHT - marginV * 2;
     Adafruit_TFTLCD *display;
-    long inputWait = 0;
+    long inputLock = 0;
+    long inputWait = 200;
 
     fillScreen(int color) {
       display->fillScreen(color);
@@ -24,6 +26,7 @@ class Screen {
     };
 
     ScreenState state = INITIAL;
+    NavigationContainer *currentOption;
 
   public:
     Container *wrapper;
@@ -42,11 +45,10 @@ class Screen {
     }
 
     void manageState() {
-      manageChildrenState();
-      
+      wrapper->manageState();
+
       switch (state) {
         case IS_UPDATING:
-          manageCurrentOptionInput();
           break;
         default:
           manageInput();
@@ -58,12 +60,13 @@ class Screen {
     }
 
     void manageInput() {
+      if (millis() - inputLock < inputWait) { return; }
+
       if (selInput == HIGH) {
-        // setState(IS_ITEM_SELECTING);
-        // selectCurrent();
+        currentOption->translateY(200, -1);
       }
-      // else if (fwInput == HIGH) { focusNext(); }
-      // else if (bwInput == HIGH) { focusPrevious(); }
+
+      inputLock = millis();
     }
 
     void manageCurrentOptionInput() {
@@ -80,9 +83,11 @@ class Screen {
       wrapper->appendChild(child);
     }
 
-    void manageChildrenState() {
-      wrapper->manageState();
+    void setCurrentOption(NavigationContainer *current) {
+      currentOption = current;
     }
+
+
 };
 
 #endif

@@ -14,23 +14,15 @@ void initializeHomeScreen(Adafruit_TFTLCD *tft) {
   homeScreen = new Screen(tft);
 
   Container *root = new Container();
-  root->style->display = ROW_FILL;
+  root->style->display = COLUMN;
   homeScreen->appendChild(root);
 
-  Container *firstChild = new Container();
-  firstChild->style->fill = 5;
+  NavigationContainer *firstChild = new NavigationContainer();
+  firstChild->style->fill = 2;
   root->appendChild(firstChild);
 
-  Container *secondChild = new Container();
-  secondChild->style->display = COLUMN;
-  secondChild->style->fill = 3;
-  root->appendChild(secondChild);
-
-  secondChild->appendChild(new Container());
-  secondChild->appendChild(new Container());
-  secondChild->appendChild(new Container());
-  secondChild->appendChild(new Container());
-  secondChild->appendChild(new Container());
+  homeScreen->setCurrentOption(firstChild);
+  firstChild->focus();
   
 }
 
