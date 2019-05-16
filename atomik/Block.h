@@ -53,7 +53,9 @@ class Block {
     }
 
     // for array initialization
-    Block() {}
+    Block() {
+      style = new Style();
+    }
 
     void draw() {
       if (style->visibility) {

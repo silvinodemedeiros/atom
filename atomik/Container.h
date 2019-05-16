@@ -67,22 +67,17 @@ class Container : public Block {
       int unitFillWidth = (WIDTH - totalGap - 30) / this->style->childrenFill;
 
       for (int i = 0; i < chAmt; i++) {
-        
+
         Container *child = chSet[i];
 
-        Style oldStyle = *child->style;
-        child->style = styleMgr->getChildrenDimensions(this->style, chAmt);
-        child->style->fill = oldStyle.fill;
-        child->style->display = oldStyle.display;
-        // child->style->width = oldStyle.width;
-        // child->style->height = oldStyle.height;
+        child->style->y = currentY;
+        child->style->x = currentX;
 
         switch (this->style->display) {
           case COLUMN:
             child->style->width = this->style->width;
             child->style->height = (child->style->fill * unitFillHeight) + child->style->fill * this->style->gap - (this->style->childrenFill * 2);
 
-            child->style->y = currentY;
             currentY += child->style->height + this->style->gap;
           break;
 
@@ -90,12 +85,10 @@ class Container : public Block {
             child->style->height = this->style->height;
             child->style->width = (child->style->fill * unitFillWidth) + child->style->fill * this->style->gap - (this->style->childrenFill * 2);
 
-            child->style->x = currentX;
             currentX += child->style->width + this->style->gap;
           break;
 
           case NONE:
-            child->style->y = currentY;
             currentY += child->style->height + this->style->gap;
           break;
         }

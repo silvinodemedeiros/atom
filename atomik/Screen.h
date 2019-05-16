@@ -31,7 +31,7 @@ class Screen {
   public:
     Container *wrapper;
 
-    Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = COLUMN) {
+    Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
       boolean isActive = false;
       display = tft;
       long timeStamp = 0;
@@ -83,6 +83,12 @@ class Screen {
 
     void appendChild(Container *child) {
       child->setDisplay(display);
+
+      child->style->x = wrapper->style->x;
+      child->style->y = wrapper->style->y;
+      child->style->width = wrapper->style->width;
+      child->style->height = wrapper->style->height;
+
       wrapper->appendChild(child);
     }
 
