@@ -13,10 +13,6 @@ class NavigationContainer : public Container {
     NavigationContainer *next;
     NavigationContainer *previous;
 
-    void manageState() {
-      Container::manageState();
-    }
-
     void setNext(NavigationContainer *nextContainer) {
       next = nextContainer;
     }

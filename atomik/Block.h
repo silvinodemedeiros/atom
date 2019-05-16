@@ -25,9 +25,10 @@ class Block {
     BlockState state = INITIAL;
     
     // animation attributes
+    int translationDeltaY = 0;
     int translationToY = -1;
     int translationDirY = 0;
-    int translationStep = 10;
+    int translationStep = 5;
     int expansionHeightStep = 30;
     int expansionToHeight = -1;
 
@@ -128,9 +129,6 @@ class Block {
       return state != INITIAL;
     }
 
-    /* USR= NEEDS TO BE USER IMPLEMENTED */
-    void manageInput() {}
-
     void manageState() {
       
       switch(state) {
@@ -151,9 +149,12 @@ class Block {
     }
 
     // BASIC ANIMATIONS
-    void translateY(int toY, int dir) {
-      translationToY = toY;
-      translationDirY = dir;
+    // void translateY(int toY, int dir) {
+    void translateY(int deltaY) {
+      translationDeltaY = deltaY;
+      style->initY = style->y;
+      // translationToY = toY;
+      // translationDirY = dir;
 
       setState(IS_TRANSITIONING_Y);
     }
@@ -163,15 +164,17 @@ class Block {
       erase();
 
       // downward translation
-      if (translationDirY == 1) {
+      // if (translationDirY == 1) {
+      if (translationDeltaY > 0) {
 
         style->y += translationStep;
 
         // is animation done?
-        if (style->y > translationToY) {
-          style->y = translationToY;
-          translationToY = -1;
-          translationDirY = 0;
+        if (style->y - style->initY > translationDeltaY) {
+          style->y = style->initY + translationDeltaY;
+          // style->y = translationToY;
+          // translationToY = -1;
+          // translationDirY = 0;
           
           setState(DONE_RENDER);
         }
@@ -182,10 +185,11 @@ class Block {
         style->y -= translationStep;
 
         // is animation done?
-        if (style->y < translationToY) {
-          style->y = translationToY;
-          translationToY = -1;
-          translationDirY = 0;
+        if (style->y - style->initY < translationDeltaY) {
+          style->y = style->initY + translationDeltaY;
+          // style->y = translationToY;
+          // translationToY = -1;
+          // translationDirY = 0;
           
           setState(DONE_RENDER);
         }

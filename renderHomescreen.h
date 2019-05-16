@@ -17,8 +17,14 @@ void initializeHomeScreen(Adafruit_TFTLCD *tft) {
   root->style->display = COLUMN;
   homeScreen->appendChild(root);
 
-  NavigationContainer *firstChild = new NavigationContainer();
-  // firstChild->style->fill = 2;
+  // NavigationContainer *firstChild = new NavigationContainer();
+  NavigationContainer *firstChild = new NavigationContainer(
+    homeScreen->wrapper->style->x,
+    homeScreen->wrapper->style->y,
+    homeScreen->wrapper->style->width,
+    50
+  );
+
   root->appendChild(firstChild);
 
   homeScreen->setCurrentOption(firstChild);

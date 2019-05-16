@@ -106,11 +106,14 @@ class Container : public Block {
       }
     }
 
-    void translateY(int toY, int dir) {
-      Block::translateY(toY, dir);
+    // void translateY(int toY, int dir) {
+      // Block::translateY(toY, dir);
+
+    void translateY(int deltaY) {
+      Block::translateY(deltaY);
       
       for (int i = 0; i < chAmt; i++) {
-        chSet[i]->translateY(toY + 10, dir);
+        // chSet[i]->translateY(toY + 10, dir);
       }
     }
 
