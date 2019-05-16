@@ -80,7 +80,7 @@ class Container : public Block {
         switch (this->style->display) {
           case COLUMN:
             child->style->width = this->style->width;
-            child->style->height = (child->style->fill * unitFillHeight) + (child->style->fill - 1) * this->style->gap - (this->style->childrenFill * 2);
+            child->style->height = (child->style->fill * unitFillHeight) + child->style->fill * this->style->gap - (this->style->childrenFill * 2);
 
             child->style->y = currentY;
             currentY += child->style->height + this->style->gap;
@@ -88,7 +88,7 @@ class Container : public Block {
 
           case ROW:
             child->style->height = this->style->height;
-            child->style->width = (child->style->fill * unitFillWidth) + (child->style->fill - 1) * this->style->gap - (this->style->childrenFill * 2);
+            child->style->width = (child->style->fill * unitFillWidth) + child->style->fill * this->style->gap - (this->style->childrenFill * 2);
 
             child->style->x = currentX;
             currentX += child->style->width + this->style->gap;
