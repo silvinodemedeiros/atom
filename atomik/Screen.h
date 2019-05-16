@@ -31,7 +31,7 @@ class Screen {
   public:
     Container *wrapper;
 
-    Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
+    Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = COLUMN) {
       boolean isActive = false;
       display = tft;
       long timeStamp = 0;

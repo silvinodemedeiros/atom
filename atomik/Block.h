@@ -27,7 +27,7 @@ class Block {
     // animation attributes
     int translationToY = -1;
     int translationDirY = 0;
-    int translationStep = 30;
+    int translationStep = 10;
     int expansionHeightStep = 30;
     int expansionToHeight = -1;
 

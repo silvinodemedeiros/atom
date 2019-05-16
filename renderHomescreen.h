@@ -18,7 +18,6 @@ void initializeHomeScreen(Adafruit_TFTLCD *tft) {
   homeScreen->appendChild(root);
 
   NavigationContainer *firstChild = new NavigationContainer();
-  firstChild->style->fill = 2;
   root->appendChild(firstChild);
 
   homeScreen->setCurrentOption(firstChild);

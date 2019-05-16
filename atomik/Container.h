@@ -74,6 +74,8 @@ class Container : public Block {
         child->style = styleMgr->getChildrenDimensions(this->style, chAmt);
         child->style->fill = oldStyle.fill;
         child->style->display = oldStyle.display;
+        // child->style->width = oldStyle.width;
+        // child->style->height = oldStyle.height;
 
         switch (this->style->display) {
           case COLUMN:
@@ -94,7 +96,7 @@ class Container : public Block {
 
           case NONE:
             child->style->y = currentY;
-            currentY += this->style->height + this->style->gap;
+            currentY += child->style->height + this->style->gap;
           break;
         }
         

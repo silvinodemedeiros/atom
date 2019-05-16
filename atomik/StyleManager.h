@@ -39,10 +39,6 @@ class StyleManager {
         return childStyle;
       }
 
-      // IF IT'S NONE
-      childStyle->width = parentStyles->width;
-      childStyle->height = parentStyles->height;
-
       return childStyle;
     }
 };
