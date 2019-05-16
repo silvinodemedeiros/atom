@@ -63,7 +63,7 @@ class Screen {
       if (millis() - inputLock < inputWait) { return; }
 
       if (selInput == HIGH) {
-        currentOption->translateY(200, -1);
+        currentOption->translateY(-200, -1);
       }
 
       inputLock = millis();
