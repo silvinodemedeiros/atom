@@ -63,22 +63,13 @@ class Screen {
       if (millis() - inputLock < inputWait) { return; }
 
       if (selInput == HIGH) {
-        currentOption->translateY(50);
+        currentOption->expandHeight(100);
       }
       else if (retInput == HIGH) {
-        currentOption->translateY(-50);
+        currentOption->expandHeight(-100);
       }
 
       inputLock = millis();
-    }
-
-    void manageCurrentOptionInput() {
-      if (retInput == HIGH) {
-        // setState(IS_ITEM_UNSELECTING);
-        // unselectCurrent();
-      } else {
-        // currentOption->manageInput();
-      }
     }
 
     void appendChild(Container *child) {

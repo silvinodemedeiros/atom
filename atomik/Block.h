@@ -26,11 +26,10 @@ class Block {
     
     // animation attributes
     int translationDeltaY = 0;
-    int translationToY = -1;
-    int translationDirY = 0;
-    int translationStep = 5;
-    int expansionHeightStep = 30;
-    int expansionToHeight = -1;
+    int translationDeltaX = 0;
+    int translationStep = 15;
+    int expansionHeightStep = 15;
+    int expansionDeltaHeight = -1;
 
     int BlockId = 0;
 
@@ -136,10 +135,12 @@ class Block {
       switch(state) {
         case IS_TRANSITIONING_Y:
           stepTranslationY();
-          Serial.println("TRANSITIONING Y");
+          break;
+        case IS_TRANSITIONING_X:
+          stepTranslationX();
           break;
         case IS_EXPANDING_HEIGHT:
-          // stepExpansionHeight();
+          stepExpansionHeight();
           break;
         case DONE_RENDER:
           setState(INITIAL);
@@ -151,13 +152,10 @@ class Block {
     }
 
     // BASIC ANIMATIONS
-    // void translateY(int toY, int dir) {
+
     void translateY(int deltaY) {
       translationDeltaY = deltaY;
       style->initY = style->y;
-      // translationToY = toY;
-      // translationDirY = dir;
-
       setState(IS_TRANSITIONING_Y);
     }
 
@@ -165,8 +163,6 @@ class Block {
 
       erase();
 
-      // downward translation
-      // if (translationDirY == 1) {
       if (translationDeltaY > 0) {
 
         style->y += translationStep;
@@ -174,10 +170,6 @@ class Block {
         // is animation done?
         if (style->y - style->initY > translationDeltaY) {
           style->y = style->initY + translationDeltaY;
-          // style->y = translationToY;
-          // translationToY = -1;
-          // translationDirY = 0;
-          
           setState(DONE_RENDER);
         }
       }
@@ -189,10 +181,6 @@ class Block {
         // is animation done?
         if (style->y - style->initY < translationDeltaY) {
           style->y = style->initY + translationDeltaY;
-          // style->y = translationToY;
-          // translationToY = -1;
-          // translationDirY = 0;
-          
           setState(DONE_RENDER);
         }
       }
@@ -200,26 +188,74 @@ class Block {
       draw();
     }
 
-    // void startExpansionHeight(int toHeight) {
-    //   expansionToHeight = toHeight;
-    //   setState(IS_EXPANDING_HEIGHT);
-    // }
+    void translateX(int deltaX) {
+      translationDeltaX = deltaX;
+      style->initX = style->x;
+      setState(IS_TRANSITIONING_X);
+    }
 
-    // void stepExpansionHeight () {
+    void stepTranslationX() {
 
-    //   erase();
+      erase();
 
-    //   height += expansionHeightStep;
+      if (translationDeltaX > 0) {
 
-    //   if (height >= expansionToHeight) {
-    //     height = expansionToHeight;
-    //     expansionToHeight = -1;
+        style->x += translationStep;
 
-    //     setState(DONE_RENDER);
-    //   }
+        // is animation done?
+        if (style->x - style->initX > translationDeltaX) {
+          style->x = style->initX + translationDeltaX;
+          setState(DONE_RENDER);
+        }
+      }
 
-    //   draw();
-    // }
+      // upwards translation
+      else {
+        style->x -= translationStep;
+
+        // is animation done?
+        if (style->x - style->initX < translationDeltaX) {
+          style->x = style->initX + translationDeltaX;
+          setState(DONE_RENDER);
+        }
+      }
+
+      draw();
+    }
+
+    void expandHeight(int deltaH) {
+      expansionDeltaHeight = deltaH;
+      style->initHeight = style->height;
+      setState(IS_EXPANDING_HEIGHT);
+    }
+
+    void stepExpansionHeight () {
+
+      erase();
+
+
+      if (expansionDeltaHeight > 0) {
+        style->height += expansionHeightStep;
+
+        if (style->height - style->initHeight > expansionDeltaHeight) {
+          style->height = style->initHeight + expansionDeltaHeight;
+
+          setState(DONE_RENDER);
+        }
+      }
+
+      else {
+        style->height -= expansionHeightStep;
+        
+        if (style->height - style->initHeight < expansionDeltaHeight) {
+          style->height = style->initHeight + expansionDeltaHeight;
+
+          setState(DONE_RENDER);
+        }
+      }
+
+      draw();
+    }
 
     // boolean shrinkHeight () {
 

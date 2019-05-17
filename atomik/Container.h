@@ -40,7 +40,6 @@ class Container : public Block {
     void appendChild(Container *child) {
       Container **newChSet = new Container*[chAmt + 1];
 
-
       int i = 0;
       while (i < chAmt) {
         newChSet[i] = chSet[i];
@@ -76,14 +75,14 @@ class Container : public Block {
         switch (this->style->display) {
           case COLUMN:
             child->style->width = this->style->width;
-            child->style->height = (child->style->fill * unitFillHeight) + child->style->fill * this->style->gap - (this->style->childrenFill * 2);
+            child->style->height = (child->style->fill * unitFillHeight) + child->style->fill * this->style->gap - this->style->childrenFill;
 
             currentY += child->style->height + this->style->gap;
           break;
 
           case ROW:
             child->style->height = this->style->height;
-            child->style->width = (child->style->fill * unitFillWidth) + child->style->fill * this->style->gap - (this->style->childrenFill * 2);
+            child->style->width = (child->style->fill * unitFillWidth) + child->style->fill * this->style->gap - this->style->childrenFill;
 
             currentX += child->style->width + this->style->gap;
           break;
@@ -92,22 +91,31 @@ class Container : public Block {
             currentY += child->style->height + this->style->gap;
           break;
         }
-        
+
         if (child->getChildrenAmount() > 0) {
           child->configureChildren();
         }
       }
     }
 
-    // void translateY(int toY, int dir) {
-      // Block::translateY(toY, dir);
-
     void translateY(int deltaY) {
       Block::translateY(deltaY);
-      
+
       for (int i = 0; i < chAmt; i++) {
-        // chSet[i]->translateY(toY + 10, dir);
+        chSet[i]->translateY(deltaY);
       }
+    }
+
+    void translateX(int deltaX) {
+      Block::translateX(deltaX);
+
+      for (int i = 0; i < chAmt; i++) {
+        chSet[i]->translateX(deltaX);
+      }
+    }
+
+    void expandHeight(int deltaH) {
+      Block::expandHeight(deltaH);
     }
 
 };
