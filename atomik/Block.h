@@ -27,9 +27,11 @@ class Block {
     // animation attributes
     int translationDeltaY = 0;
     int translationDeltaX = 0;
+    int expansionDeltaHeight = 0;
+    int expansionDeltaWidth = 0;
     int translationStep = 15;
     int expansionHeightStep = 15;
-    int expansionDeltaHeight = -1;
+    int expansionWidthStep = 15;
 
     int BlockId = 0;
 
@@ -42,7 +44,6 @@ class Block {
 
       style->x = ux;
       style->y = uy;
-      style->nextAvailableY = uy;
       style->initX = ux;
       style->initY = uy;
       style->width = w;
@@ -142,6 +143,9 @@ class Block {
         case IS_EXPANDING_HEIGHT:
           stepExpansionHeight();
           break;
+        case IS_EXPANDING_WIDTH:
+          stepExpansionWidth();
+          break;
         case DONE_RENDER:
           setState(INITIAL);
           break;
@@ -153,6 +157,7 @@ class Block {
 
     // BASIC ANIMATIONS
 
+    // VERTICAL TRANSLATION
     void translateY(int deltaY) {
       translationDeltaY = deltaY;
       style->initY = style->y;
@@ -188,6 +193,7 @@ class Block {
       draw();
     }
 
+    // HORIZONTAL TRANSLATION
     void translateX(int deltaX) {
       translationDeltaX = deltaX;
       style->initX = style->x;
@@ -223,6 +229,7 @@ class Block {
       draw();
     }
 
+    // HEIGHT EXPANSION/SHRINKAGE
     void expandHeight(int deltaH) {
       expansionDeltaHeight = deltaH;
       style->initHeight = style->height;
@@ -257,18 +264,41 @@ class Block {
       draw();
     }
 
-    // boolean shrinkHeight () {
+    // HORIZONTAL TRANSLATION
+    void expandWidth(int deltaW) {
+      expansionDeltaWidth = deltaW;
+      style->initWidth = style->width;
+      setState(IS_EXPANDING_WIDTH);
+    }
 
-    //   height -= expansionHeightStep;
-    
-    //   if (height < initHeight) {
-    //     height = initHeight;
-    //     return true;
-    //   }
+    void stepExpansionWidth () {
 
-    //   return false;
+      erase();
 
-    // }
+      if (expansionDeltaWidth > 0) {
+        style->width += expansionWidthStep;
+
+        if (style->width - style->initWidth > expansionDeltaWidth) {
+          style->width = style->initWidth + expansionDeltaWidth;
+
+          expansionDeltaWidth = 0;
+          setState(DONE_RENDER);
+        }
+      }
+
+      else {
+        style->width -= expansionWidthStep;
+        
+        if (style->width - style->initWidth < expansionDeltaWidth) {
+          style->width = style->initWidth + expansionDeltaWidth;
+
+          expansionDeltaWidth = 0;
+          setState(DONE_RENDER);
+        }
+      }
+
+      draw();
+    }
 
 };
 

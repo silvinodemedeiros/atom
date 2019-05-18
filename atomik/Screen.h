@@ -63,10 +63,10 @@ class Screen {
       if (millis() - inputLock < inputWait) { return; }
 
       if (selInput == HIGH) {
-        currentOption->expandHeight(100);
+        currentOption->expandWidth(100);
       }
       else if (retInput == HIGH) {
-        currentOption->expandHeight(-100);
+        currentOption->expandWidth(-100);
       }
 
       inputLock = millis();

@@ -33,8 +33,8 @@ class Container : public Block {
       Block::manageState();
     }
 
-    int getChildrenAmount() {
-      return chAmt;
+    int isEmpty() {
+      return chAmt == 0;
     }
 
     void appendChild(Container *child) {
@@ -92,7 +92,7 @@ class Container : public Block {
           break;
         }
 
-        if (child->getChildrenAmount() > 0) {
+        if (!child->isEmpty() > 0) {
           child->configureChildren();
         }
       }
@@ -116,6 +116,10 @@ class Container : public Block {
 
     void expandHeight(int deltaH) {
       Block::expandHeight(deltaH);
+    }
+
+    void expandWidth(int deltaW) {
+      Block::expandWidth(deltaW);
     }
 
 };

@@ -10,7 +10,6 @@ class Style {
     int x = 0;
     int initX = 0;
     int y = 0;
-    int nextAvailableY = 0;
     int initY = 0;
     int width = 0;
     int initWidth = 0;
