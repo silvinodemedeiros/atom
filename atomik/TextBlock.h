@@ -1,9 +1,9 @@
 #ifndef TEXTBLOCK_H
 #define TEXTBLOCK_H
 
-#include "Block.h"
+#include "Container.h"
 
-class TextBlock : public Block {
+class TextBlock : public Container {
 
   protected:
     String text = "";
@@ -11,27 +11,25 @@ class TextBlock : public Block {
     int skeletonH = 25;
   
   public:
-    TextBlock(int ux, int uy, String utxt) :
-    Block(ux, uy, 0, 0) {
+    TextBlock(int ux, int uy, String utxt) : Container(ux, uy, 0, 0) {
       text = utxt;
     }
 
-    TextBlock(String utxt) :
-    Block() {
+    TextBlock(String utxt) : Container() {
       text = utxt;
     }
 
     void erase() {
-      display->setTextColor(bgColor);
-      display->setCursor(x, y);
-      display->setTextSize(2);
+      display->setTextColor(style->bgColor);
+      display->setCursor(style->x, style->y);
+      display->setTextSize(style->textSize);
       display->print(text);
     }
 
     void draw() {
-      display->setTextColor(borderColor);
-      display->setCursor(x, y);
-      display->setTextSize(2);
+      display->setTextColor(style->borderColor);
+      display->setCursor(style->x, style->y);
+      display->setTextSize(style->textSize);
       display->print(text);
     }
   

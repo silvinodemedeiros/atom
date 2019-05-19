@@ -7,6 +7,8 @@
 class Style {
 
   public:
+    String name = "";
+  
     int x = 0;
     int initX = 0;
     int y = 0;
@@ -24,6 +26,8 @@ class Style {
 
     int borderColor = DEFAULTGREEN;
     int bgColor = MAINBG;
+
+    int textSize = 2;
 
     Style() {}
   

@@ -7,27 +7,22 @@
 
 Screen *homeScreen;
 
-void initializeHomeScreen(Adafruit_TFTLCD *tft) {
+void initHomeScreen(Adafruit_TFTLCD *tft) {
+
+  Container *homeRoot = new Container();
+  homeRoot->style->display = COLUMN;
+  homeRoot->style->visibility = false;
 
   int amount = 5;
   // String items[amount] = {"Item 1", "Item 2", "Item 3"};
   homeScreen = new Screen(tft);
+  homeScreen->appendChild(homeRoot);
+  homeScreen->nextSystemState = ITEM_STATE;
 
-  Container *root = new Container();
-  root->style->display = NONE;
-  root->style->visibility = false;
-  homeScreen->appendChild(root);
-
-  Container *child = new Container (
-    root->style->x,
-    root->style->y,
-    100,
-    100
-  );
-
-  root->appendChild(child);
-  homeScreen->setCurrentOption(child);
-  
+  for (int i = 0; i < amount; i++) {
+    Container *child = new Container();
+    homeRoot->appendChild(child);
+  }
 }
 
 #endif

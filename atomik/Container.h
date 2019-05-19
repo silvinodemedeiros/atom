@@ -33,6 +33,15 @@ class Container : public Block {
       Block::manageState();
     }
 
+    void erase() {
+
+      for (int i = 0; i < chAmt; i++) {
+        chSet[i]->erase();
+      }
+
+      Block::erase();
+    }
+
     int isEmpty() {
       return chAmt == 0;
     }

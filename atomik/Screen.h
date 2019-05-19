@@ -1,18 +1,20 @@
 #ifndef MENUSCREEN_H
 #define MENUSCREEN_H
 
-#include "../NavigationContainer.h"
 #include "Container.h"
 #include "StyleTypes.h"
+#include "../shared.h"
 
 class Screen {
-  private:
+  protected:
+    Adafruit_TFTLCD *display;
+
     const int marginH = 15;
     const int marginV = 20;
     const int bgColor = MAINBG;
     int wrapperW = WIDTH - marginH * 2;
     int wrapperH = HEIGHT - marginV * 2;
-    Adafruit_TFTLCD *display;
+
     long inputLock = 0;
     long inputWait = 200;
 
@@ -26,10 +28,11 @@ class Screen {
     };
 
     ScreenState state = INITIAL;
-    NavigationContainer *currentOption;
+    bool isActive = false;
 
   public:
     Container *wrapper;
+    int nextSystemState = -1;
 
     Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
       boolean isActive = false;
@@ -45,31 +48,30 @@ class Screen {
     }
 
     void manageState() {
+      if (!isActive) { return; }
+
       wrapper->manageState();
 
       switch (state) {
         case IS_UPDATING:
-          break;
+        break;
         default:
           manageInput();
       }
     }
 
-    void setState(ScreenState nextState) {
-      state = nextState;
-    }
-
     void manageInput() {
       if (millis() - inputLock < inputWait) { return; }
-
+      
       if (selInput == HIGH) {
-        currentOption->expandWidth(100);
-      }
-      else if (retInput == HIGH) {
-        currentOption->expandWidth(-100);
+        goToState(nextSystemState);
       }
 
       inputLock = millis();
+    }
+
+    void setState(ScreenState nextState) {
+      state = nextState;
     }
 
     void appendChild(Container *child) {
@@ -83,8 +85,17 @@ class Screen {
       wrapper->appendChild(child);
     }
 
-    void setCurrentOption(NavigationContainer *current) {
-      currentOption = current;
+    void activate() {
+      isActive = true;
+    }
+
+    void deactivate() {
+      wrapper->erase();
+      isActive = false;
+    }
+
+    void toggle() {
+      isActive = !isActive;
     }
 
 
