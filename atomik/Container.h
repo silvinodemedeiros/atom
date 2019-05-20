@@ -3,7 +3,6 @@
 #define CONTAINER_H
 
 #include "Style.h"
-#include "StyleManager.h"
 #include "StyleTypes.h"
 
 #include "Block.h"
@@ -15,14 +14,24 @@ class Container : public Block {
     int activeColor = WHITE;
 
   public:
-
-    // PUBLIC TEMP: tree attributes
+  
     Container **chSet;
     int chAmt = 0;
-    StyleManager *styleMgr = new StyleManager();
+    Container *next;
+    Container *previous;
+    bool focused = false;
+    int nextSystemState = -1;
 
     Container(int ux, int uy, int w, int h) : Block(ux, uy, w, h) {}
     Container() : Block() {}
+
+    void setNext(Container *nextContainer) {
+      next = nextContainer;
+    }
+
+    void setPrevious(Container *previousContainer) {
+      previous = previousContainer;
+    }
 
     void manageState() {
 
@@ -129,6 +138,28 @@ class Container : public Block {
 
     void expandWidth(int deltaW) {
       Block::expandWidth(deltaW);
+    }
+
+    void focus() {
+      this->style->borderColor = WHITE;
+      focused = true;
+    }
+
+    void unfocus() {
+      this->style->borderColor = DEFAULTGREEN;
+      focused = false;
+    }
+
+    Container* focusNext() {
+      this->unfocus();
+      next->focus();
+      return next;
+    }
+
+    Container* focusPrevious() {
+      this->unfocus();
+      previous->focus();
+      return previous;
     }
 
 };

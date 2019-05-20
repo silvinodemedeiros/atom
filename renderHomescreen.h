@@ -17,11 +17,33 @@ void initHomeScreen(Adafruit_TFTLCD *tft) {
   // String items[amount] = {"Item 1", "Item 2", "Item 3"};
   homeScreen = new Screen(tft);
   homeScreen->appendChild(homeRoot);
-  homeScreen->nextSystemState = ITEM_STATE;
 
   for (int i = 0; i < amount; i++) {
     Container *child = new Container();
     homeRoot->appendChild(child);
+
+    if (i == 0) {
+      homeScreen->currentOption = child;
+      child->nextSystemState = ITEM_STATE;
+      child->focus();
+    }
+  }
+
+  for (int i = 0; i < homeRoot->chAmt; i++) {
+    if (i > 0 && i < homeRoot->chAmt - 1) {
+      homeRoot->chSet[i]->next = homeRoot->chSet[i+1];
+      homeRoot->chSet[i]->previous = homeRoot->chSet[i-1];
+    }
+
+    else if (i == 0) {
+      homeRoot->chSet[i]->next = homeRoot->chSet[i+1];
+      homeRoot->chSet[i]->previous = homeRoot->chSet[homeRoot->chAmt - 1];
+    }
+
+    else if (i == homeRoot->chAmt - 1) {
+      homeRoot->chSet[i]->next = homeRoot->chSet[0];
+      homeRoot->chSet[i]->previous = homeRoot->chSet[i - 1];
+    }
   }
 }
 

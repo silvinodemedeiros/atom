@@ -16,15 +16,13 @@ void initItemScreen(Adafruit_TFTLCD *tft) {
 
   itemScreen = new Screen(tft);
   itemScreen->appendChild(itemRoot);
-  itemScreen->nextSystemState = HOME_STATE;
-  
-  // TextBlock *textBlock = new TextBlock("35");
-  // textBlock->style->x = (WIDTH / 2) - 10;
-  // textBlock->style->y = (HEIGHT / 2) - 10;
-  // textBlock->style->textSize = 3;
-  // itemRoot->appendChild(textBlock);
 
-  itemRoot->appendChild(new Container());
+  Container *child = new Container();
+  itemScreen->currentOption = child;
+  child->nextSystemState = HOME_STATE;
+  child->focus();
+
+  itemRoot->appendChild(child);
   itemRoot->appendChild(new Container());
   itemRoot->appendChild(new Container());
 

@@ -3,7 +3,6 @@
 
 #include "Container.h"
 #include "StyleTypes.h"
-#include "../shared.h"
 
 class Screen {
   protected:
@@ -32,7 +31,8 @@ class Screen {
 
   public:
     Container *wrapper;
-    int nextSystemState = -1;
+    Container *currentOption;
+    int systemState = -1;
 
     Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
       boolean isActive = false;
@@ -51,27 +51,6 @@ class Screen {
       if (!isActive) { return; }
 
       wrapper->manageState();
-
-      switch (state) {
-        case IS_UPDATING:
-        break;
-        default:
-          manageInput();
-      }
-    }
-
-    void manageInput() {
-      if (millis() - inputLock < inputWait) { return; }
-      
-      if (selInput == HIGH) {
-        goToState(nextSystemState);
-      }
-
-      inputLock = millis();
-    }
-
-    void setState(ScreenState nextState) {
-      state = nextState;
     }
 
     void appendChild(Container *child) {
