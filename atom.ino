@@ -10,6 +10,11 @@ Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 #include "input.h" 									// input ports
 #include "shared.h"									// useful functions
 
+#include "atomik/Screen.h"
+
+#include "renderHomescreen.h"
+#include "renderItemscreen.h"
+
 #include "GuiManager.h"
 
 GuiManager *guiMgr;
@@ -19,7 +24,6 @@ void setup() {
 	tft.reset();
 	tft.begin(0x9341);
 	tft.setRotation(rot);
-	guiMgr->systemState = SYSTEM_INITIAL;
 
 	Serial.begin(9600);
 
@@ -30,19 +34,20 @@ void setup() {
 
 	randomSeed(analogRead(0));
 
-	guiMgr = new GuiManager(&tft);
+	Screen *homeScreen = new Screen(&tft);
+	Screen *itemScreen = new Screen(&tft);
+
+	initHomeScreen(homeScreen);
+	initItemScreen(itemScreen);
+
+	guiMgr = new GuiManager();
+	guiMgr->appendScreen(homeScreen);
+	guiMgr->appendScreen(itemScreen);
+
+	guiMgr->systemState = HOME_STATE;
 }
 
 void loop() {
-
-	switch (guiMgr->systemState) {
-		case HOME_STATE:
-			Serial.println("HOME_STATE");
-		break;
-		case ITEM_STATE:
-			Serial.println("ITEM_STATE");
-		break;
-	}
 
 	guiMgr->manageApplication();
 

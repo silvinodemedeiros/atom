@@ -8,6 +8,8 @@ class Style {
 
   public:
     String name = "";
+    int startY = 0;
+    int startX = 0;
   
     int x = 0;
     int initX = 0;

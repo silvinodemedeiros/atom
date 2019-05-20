@@ -5,8 +5,6 @@
 
 #include "states.h"
 #include "input.h"
-#include "renderHomescreen.h"
-#include "renderItemscreen.h"
 
 class GuiManager {
 
@@ -17,15 +15,12 @@ class GuiManager {
 
     bool hasLoaded = false;
     bool inputLock = false;
-    int lastInput = 0;
+    long lastInput = 0;
     int inputWait = 500;
 
-    int systemState = SYSTEM_INITIAL;
+    int systemState;
 
-    GuiManager(Adafruit_TFTLCD *tft) {
-      initHomeScreen(tft);
-      initItemScreen(tft);
-    };
+    GuiManager() {};
 
     bool isInputReleased () {
       if (fwInput != -1 && bwInput != -1 && selInput != -1 && retInput != -1)
@@ -34,17 +29,36 @@ class GuiManager {
 
     void activate(int nextState) {
       
+      if (currentScreen) {
+        currentScreen->deactivate();
+      }
+
       inputLock = true;
       hasLoaded = false;
       systemState = nextState;
 
-      if (currentScreen) {
-        currentScreen->deactivate();
+      for (int i = 0; i < screenAmt; i++) {
+        if (screenSet[i]->systemState == systemState) {
+          currentScreen = screenSet[i];
+          break;
+        }
       }
+
+      currentScreen->activate();
     }
 
     void appendScreen(Screen *screen) {
+      Screen **newScreenSet = new Screen*[screenAmt + 1];
 
+      int i = 0;
+      while (i < screenAmt) {
+        newScreenSet[i] = screenSet[i];
+        i++;
+      }
+
+      newScreenSet[i] = screen;
+      screenSet = newScreenSet;
+      screenAmt++;
     }
 
     void manageApplication() {
@@ -63,8 +77,14 @@ class GuiManager {
       if (millis() - lastInput < inputWait) { return; }
 
       if (selInput == HIGH) {
-        activate(currentScreen->currentOption->nextSystemState);
-        lastInput = millis();
+        if (currentScreen->currentOption->nextSystemState != -1) {
+          activate(currentScreen->currentOption->nextSystemState);
+          lastInput = millis();
+        } else {
+          currentScreen->currentOption->manageSelection(currentScreen->currentOption);
+          lastInput = millis();
+        }
+
       }
 
       else if (fwInput == HIGH) {
@@ -76,48 +96,41 @@ class GuiManager {
         currentScreen->currentOption = currentScreen->currentOption->focusPrevious();
         lastInput = millis();
       }
-      
+
+      else if (retInput == HIGH) {
+        currentScreen->currentOption->manageReturn(currentScreen->currentOption);
+        lastInput = millis();
+      }
     }
 
     void manageState() {
-      if (systemState == SYSTEM_INITIAL) {
-        if (hasLoaded == false) {
-          activate(HOME_STATE);
+
+      // switch (currentScreen->systemState) {
+      //   case HOME_STATE:
+      //     Serial.println("HOME_STATE");
+      //   break;
+      //   case ITEM_STATE:
+      //     Serial.println("ITEM_STATE");
+      //   break;
+      // }
+
+      for (int i= 0; i < screenAmt; i++) {
+        Serial.print(screenSet[i]->name);
+        Serial.print(" ");
+      }
+      Serial.println("");
+
+      if (hasLoaded == false) {
+        activate(systemState);
+        hasLoaded = true;
+      } else {
+        if (isInputReleased()) {
+          inputLock = false;
         }
       }
 
-      // home
-      else if (systemState == HOME_STATE) {
-        if (hasLoaded == false) {
-          currentScreen = homeScreen;
-          homeScreen->activate();
-          hasLoaded = true;
-        } else {
-          if (isInputReleased()) {
-            inputLock = false;
-          }
-        }
-
-        if (inputLock == false) {
-          homeScreen->manageState();
-        }
-      }
-
-      // item
-      else if (systemState == ITEM_STATE) {
-        if (hasLoaded == false) {
-          currentScreen = itemScreen;
-          itemScreen->activate();
-          hasLoaded = true;
-        } else {
-          if (isInputReleased()) {
-            inputLock = false;
-          }
-        }
-
-        if (inputLock == false) {
-          itemScreen->manageState();
-        }
+      if (inputLock == false) {
+        currentScreen->manageState();
       }
     }
     

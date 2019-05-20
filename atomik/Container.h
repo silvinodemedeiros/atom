@@ -9,16 +9,17 @@
 
 class Container : public Block {
 
-  protected:
-    int defaultColor = DEFAULTGREEN;
-    int activeColor = WHITE;
-
   public:
+    void (*manageForwards)(Container*) = 0;
+    void (*manageBackwards)(Container*) = 0;
+    void (*manageSelection)(Container*) = 0;
+    void (*manageReturn)(Container*) = 0;
   
     Container **chSet;
     int chAmt = 0;
-    Container *next;
-    Container *previous;
+    Container *parent = 0;
+    Container *next = 0;
+    Container *previous = 0;
     bool focused = false;
     int nextSystemState = -1;
 
@@ -65,7 +66,8 @@ class Container : public Block {
       }
 
       this->style->childrenFill += child->style->fill;
-
+      
+      child->parent = this;
       child->setDisplay(display);
       newChSet[i] = child;
       chSet = newChSet;
@@ -86,7 +88,6 @@ class Container : public Block {
       for (int i = 0; i < chAmt; i++) {
 
         Container *child = chSet[i];
-
         child->style->y = currentY;
         child->style->x = currentX;
 
@@ -109,6 +110,9 @@ class Container : public Block {
             currentY += child->style->height + this->style->gap;
           break;
         }
+
+        child->style->initX = child->style->x;
+        child->style->initY = child->style->y;
 
         if (!child->isEmpty() > 0) {
           child->configureChildren();
@@ -151,12 +155,16 @@ class Container : public Block {
     }
 
     Container* focusNext() {
+      if (!next) { return; }
+
       this->unfocus();
       next->focus();
       return next;
     }
 
     Container* focusPrevious() {
+      if (!previous) { return; }
+
       this->unfocus();
       previous->focus();
       return previous;

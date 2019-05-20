@@ -5,23 +5,55 @@
 #include "atomik/Container.h"
 #include "atomik/StyleTypes.h"
 
-Screen *homeScreen;
+void enlarge(Container *container) {
+  Container *parent = container->parent;
+  
+  for (int i = 0; i < parent->chAmt; i++) {
+    if (parent->chSet[i] != container) {
+      parent->chSet[i]->erase();
+      parent->chSet[i]->style->visibility = false;
+    } else {
+      container->erase();
+      container->style->y = parent->style->y;
+      container->expandHeight(130);
+    }
+  }
+}
 
-void initHomeScreen(Adafruit_TFTLCD *tft) {
+void shrink(Container *container) {
+  Container *parent = container->parent;
+  
+  for (int i = 0; i < parent->chAmt; i++) {
+    if (parent->chSet[i] != container) {
+      parent->chSet[i]->style->visibility = true;
+    } else {
+      container->erase();
+      container->style->y = container->style->initY;
+      container->expandHeight(-130);
+    }
+  }
+}
+
+// creates screen
+void initHomeScreen(Screen *homeScreen) {
+
+  int amount = 5;
+  // String items[amount] = {"Item 1", "Item 2", "Item 3"};
+  homeScreen->systemState = HOME_STATE;
+  homeScreen->name = "HOME";
 
   Container *homeRoot = new Container();
   homeRoot->style->display = COLUMN;
   homeRoot->style->visibility = false;
-
-  int amount = 5;
-  // String items[amount] = {"Item 1", "Item 2", "Item 3"};
-  homeScreen = new Screen(tft);
   homeScreen->appendChild(homeRoot);
 
   for (int i = 0; i < amount; i++) {
     Container *child = new Container();
     homeRoot->appendChild(child);
 
+    child->manageSelection = enlarge;
+    child->manageReturn = shrink;
+    
     if (i == 0) {
       homeScreen->currentOption = child;
       child->nextSystemState = ITEM_STATE;

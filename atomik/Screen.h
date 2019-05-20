@@ -7,13 +7,12 @@
 class Screen {
   protected:
     Adafruit_TFTLCD *display;
-
     const int marginH = 15;
     const int marginV = 20;
     const int bgColor = MAINBG;
     int wrapperW = WIDTH - marginH * 2;
     int wrapperH = HEIGHT - marginV * 2;
-
+    
     long inputLock = 0;
     long inputWait = 200;
 
@@ -32,7 +31,8 @@ class Screen {
   public:
     Container *wrapper;
     Container *currentOption;
-    int systemState = -1;
+    int systemState;
+    String name;
 
     Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
       boolean isActive = false;

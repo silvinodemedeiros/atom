@@ -6,15 +6,14 @@
 #include "atomik/StyleTypes.h"
 #include "atomik/TextBlock.h"
 
-Screen *itemScreen;
+void initItemScreen(Screen *itemScreen) {
 
-void initItemScreen(Adafruit_TFTLCD *tft) {
+  itemScreen->systemState = ITEM_STATE;
+  itemScreen->name = "ITEM";
 
   Container *itemRoot = new Container();
   itemRoot->style->display = COLUMN;
   itemRoot->style->visibility = false;
-
-  itemScreen = new Screen(tft);
   itemScreen->appendChild(itemRoot);
 
   Container *child = new Container();
