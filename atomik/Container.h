@@ -4,7 +4,7 @@
 
 #include "Style.h"
 #include "StyleTypes.h"
-
+#include "TextBlock.h"
 #include "Block.h"
 
 class Container : public Block {
@@ -155,19 +155,19 @@ class Container : public Block {
     }
 
     Container* focusNext() {
-      if (!next) { return; }
-
-      this->unfocus();
-      next->focus();
-      return next;
+      if (next) {
+        this->unfocus();
+        next->focus();
+        return next;
+      }
     }
 
     Container* focusPrevious() {
-      if (!previous) { return; }
-
-      this->unfocus();
-      previous->focus();
-      return previous;
+      if (previous) {
+        this->unfocus();
+        previous->focus();
+        return previous;
+      }
     }
 
 };

@@ -14,8 +14,7 @@ void enlarge(Container *container) {
       parent->chSet[i]->style->visibility = false;
     } else {
       container->erase();
-      container->style->y = parent->style->y;
-      container->expandHeight(130);
+      container->translateY(parent->style->initY - container->style->y);
     }
   }
 }
@@ -28,8 +27,7 @@ void shrink(Container *container) {
       parent->chSet[i]->style->visibility = true;
     } else {
       container->erase();
-      container->style->y = container->style->initY;
-      container->expandHeight(-130);
+      container->translateY(container->style->initY - container->style->y);
     }
   }
 }
@@ -38,7 +36,13 @@ void shrink(Container *container) {
 void initHomeScreen(Screen *homeScreen) {
 
   int amount = 5;
-  // String items[amount] = {"Item 1", "Item 2", "Item 3"};
+  String items[amount] = {
+    "1. My Games",
+    "2. Manage",
+    "3. States",
+    "4. Elements",
+    "5. Options"
+  };
   homeScreen->systemState = HOME_STATE;
   homeScreen->name = "HOME";
 
@@ -53,10 +57,10 @@ void initHomeScreen(Screen *homeScreen) {
 
     child->manageSelection = enlarge;
     child->manageReturn = shrink;
+    child->text = items[i];
     
     if (i == 0) {
       homeScreen->currentOption = child;
-      child->nextSystemState = ITEM_STATE;
       child->focus();
     }
   }

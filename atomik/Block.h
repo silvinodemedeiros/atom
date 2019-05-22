@@ -4,6 +4,7 @@
 #include <SPFD5408_Adafruit_GFX.h>
 #include <SPFD5408_Adafruit_TFTLCD.h>
 #include "Style.h"
+#include "TextBlock.h"
 
 class Block {
 
@@ -38,6 +39,7 @@ class Block {
   public:
 
     Style *style;
+    String text = "";
 
     Block(int ux, int uy, int w, int h) {
       style = new Style();
@@ -60,11 +62,52 @@ class Block {
     void draw() {
       if (style->visibility) {
         display->drawRect(style->x, style->y, style->width, style->height, style->borderColor);
+        
+        if (text != "") {
+          drawText();
+        }
       }
     }
 
     void erase() {
       display->drawRect(style->x, style->y, style->width, style->height, style->bgColor);
+      
+      if (text != "") {
+        eraseText();
+      }
+    }
+
+    void eraseText() {
+      
+      int tW = text.length() * 12;
+      int tH = 16;
+      int tX = style->x + (style->width / 2) - (tW / 2);
+      int tY = style->y + (style->height / 2) - (tH / 2);
+
+      if (state == IS_TRANSITIONING_Y || state == IS_TRANSITIONING_X) {
+        display->drawRect(tX, tY, tW, tH, style->bgColor);
+      } else {
+        display->setTextColor(style->bgColor);
+        display->setCursor(tX, tY);
+        display->setTextSize(style->textSize);
+        display->print(text);
+      }
+    }
+
+    void drawText() {
+      int tW = text.length() * 12;
+      int tH = 16;
+      int tX = style->x + (style->width / 2) - (tW / 2);
+      int tY = style->y + (style->height / 2) - (tH / 2);
+
+      if (state == IS_TRANSITIONING_Y || state == IS_TRANSITIONING_X) {
+        display->drawRect(tX, tY, tW, tH, style->borderColor);
+      } else {
+        display->setTextColor(style->borderColor);
+        display->setCursor(tX, tY);
+        display->setTextSize(style->textSize);
+        display->print(text);
+      }
     }
 
     int getHeight() {

@@ -105,20 +105,14 @@ class GuiManager {
 
     void manageState() {
 
-      // switch (currentScreen->systemState) {
-      //   case HOME_STATE:
-      //     Serial.println("HOME_STATE");
-      //   break;
-      //   case ITEM_STATE:
-      //     Serial.println("ITEM_STATE");
-      //   break;
-      // }
-
-      for (int i= 0; i < screenAmt; i++) {
-        Serial.print(screenSet[i]->name);
-        Serial.print(" ");
+      switch (currentScreen->systemState) {
+        case HOME_STATE:
+          Serial.println("HOME_STATE");
+        break;
+        case ITEM_STATE:
+          Serial.println("ITEM_STATE");
+        break;
       }
-      Serial.println("");
 
       if (hasLoaded == false) {
         activate(systemState);
