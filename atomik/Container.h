@@ -20,6 +20,7 @@ class Container : public Block {
     Container *parent = 0;
     Container *next = 0;
     Container *previous = 0;
+    Container *link = 0;
     bool focused = false;
     int nextSystemState = -1;
 
@@ -62,6 +63,7 @@ class Container : public Block {
       int i = 0;
       while (i < chAmt) {
         newChSet[i] = chSet[i];
+        newChSet[i]->style = chSet[i]->style;
         i++;
       }
 
@@ -82,8 +84,8 @@ class Container : public Block {
       int currentX = this->style->x;
 
       int totalGap = this->style->gap * (chAmt - 1);
-      int unitFillHeight = (HEIGHT - totalGap - 40) / this->style->childrenFill;
-      int unitFillWidth = (WIDTH - totalGap - 30) / this->style->childrenFill;
+      int unitFillHeight = (this->style->height - totalGap) / this->style->childrenFill;
+      int unitFillWidth = (this->style->width - totalGap) / this->style->childrenFill;
 
       for (int i = 0; i < chAmt; i++) {
 
@@ -94,20 +96,20 @@ class Container : public Block {
         switch (this->style->display) {
           case COLUMN:
             child->style->width = this->style->width;
-            child->style->height = (child->style->fill * unitFillHeight) + child->style->fill * this->style->gap - this->style->childrenFill;
+            child->style->height = (child->style->fill * unitFillHeight) + child->style->fill * (this->style->gap - 3);
 
-            currentY += child->style->height + this->style->gap;
+            currentY += child->style->height + this->style->gap - 3;
           break;
 
           case ROW:
             child->style->height = this->style->height;
-            child->style->width = (child->style->fill * unitFillWidth) + child->style->fill * this->style->gap - this->style->childrenFill;
+            child->style->width = (child->style->fill * unitFillWidth) + child->style->fill * (this->style->gap - 3);
 
-            currentX += child->style->width + this->style->gap;
+            currentX += child->style->width + this->style->gap - 3;
           break;
 
           case NONE:
-            currentY += child->style->height + this->style->gap;
+            // currentY += child->style->height + this->style->gap;
           break;
         }
 
@@ -168,6 +170,28 @@ class Container : public Block {
         previous->focus();
         return previous;
       }
+    }
+
+    void establishNavigation() {
+
+      for (int i = 0; i < chAmt; i++) {
+        if (i > 0 && i < chAmt - 1) {
+          chSet[i]->next = chSet[i+1];
+          chSet[i]->previous = chSet[i-1];
+        }
+
+        else if (i == 0) {
+          chSet[i]->next = chSet[i+1];
+          chSet[i]->previous = chSet[chAmt - 1];
+        }
+
+        else if (i == chAmt - 1) {
+          chSet[i]->next = chSet[0];
+          chSet[i]->previous = chSet[i - 1];
+        }
+      }
+
+      chSet[0]->focus();
     }
 
 };

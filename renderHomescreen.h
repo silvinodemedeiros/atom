@@ -5,29 +5,42 @@
 #include "atomik/Container.h"
 #include "atomik/StyleTypes.h"
 
-void enlarge(Container *container) {
-  Container *parent = container->parent;
-  
+void expose(Container *item) {
+  Container *parent = item->link->parent;
+  bool hasFound = false;
+
   for (int i = 0; i < parent->chAmt; i++) {
-    if (parent->chSet[i] != container) {
-      parent->chSet[i]->erase();
-      parent->chSet[i]->style->visibility = false;
+    Container *child = parent->chSet[i];
+
+    if (hasFound) {
+      child->translateX(WIDTH);
     } else {
-      container->erase();
-      container->translateY(parent->style->initY - container->style->y);
+      child->translateX(-WIDTH);
+    }
+    
+    if (child == item->link) {
+      child->translateY(parent->style->y - child->style->y);
+      hasFound = true;
     }
   }
 }
 
-void shrink(Container *container) {
-  Container *parent = container->parent;
-  
+void comeback(Container *item) {
+  Container *parent = item->link->parent;
+  bool hasFound = false;
+
   for (int i = 0; i < parent->chAmt; i++) {
-    if (parent->chSet[i] != container) {
-      parent->chSet[i]->style->visibility = true;
+    Container *child = parent->chSet[i];
+
+    if (hasFound) {
+      child->translateX(child->style->initX - child->style->x);
     } else {
-      container->erase();
-      container->translateY(container->style->initY - container->style->y);
+      child->translateX(child->style->initX - child->style->x);
+    }
+    
+    if (child == item->link) {
+      child->translateY(child->style->initY - child->style->y);
+      hasFound = true;
     }
   }
 }
@@ -35,52 +48,50 @@ void shrink(Container *container) {
 // creates screen
 void initHomeScreen(Screen *homeScreen) {
 
-  int amount = 5;
-  String items[amount] = {
-    "1. My Games",
-    "2. Manage",
-    "3. States",
-    "4. Elements",
-    "5. Options"
-  };
+  int tabAmt = 3;
+  int contentAmt = 3;
+  String tabTitles[tabAmt] = {"A", "B", "C" };
+  String contentTitles[contentAmt] = { "Start Game", "Controls", "Options" };
+
   homeScreen->systemState = HOME_STATE;
   homeScreen->name = "HOME";
 
-  Container *homeRoot = new Container();
-  homeRoot->style->display = COLUMN;
-  homeRoot->style->visibility = false;
-  homeScreen->appendChild(homeRoot);
+  Container *root = new Container();
+  root->style->display = COLUMN;
+  root->style->visibility = false;
+  homeScreen->appendChild(root);
 
-  for (int i = 0; i < amount; i++) {
-    Container *child = new Container();
-    homeRoot->appendChild(child);
+  Container *content = new Container();
+  content->style->fill = 3;
+  content->style->visibility = false;
+  content->style->display = COLUMN;
 
-    child->manageSelection = enlarge;
-    child->manageReturn = shrink;
-    child->text = items[i];
-    
+  for (int i = 0; i < contentAmt; i++) {
+    Container *contentItem = new Container();
+    contentItem->text = contentTitles[i];
+    content->appendChild(contentItem);
+  }
+
+  Container *toolbar = new Container();
+  toolbar->style->fill = 1;
+  toolbar->style->display = ROW;
+  toolbar->style->visibility = false;
+
+  for (int i = 0; i < tabAmt; i++) {
+    Container *tab = new Container();
+    tab->text = tabTitles[i];
+    tab->link = content->chSet[i];
+    tab->manageSelection = expose;
+    tab->manageReturn = comeback;
+    toolbar->appendChild(tab);
+
     if (i == 0) {
-      homeScreen->currentOption = child;
-      child->focus();
+      homeScreen->currentOption = tab;
     }
   }
-
-  for (int i = 0; i < homeRoot->chAmt; i++) {
-    if (i > 0 && i < homeRoot->chAmt - 1) {
-      homeRoot->chSet[i]->next = homeRoot->chSet[i+1];
-      homeRoot->chSet[i]->previous = homeRoot->chSet[i-1];
-    }
-
-    else if (i == 0) {
-      homeRoot->chSet[i]->next = homeRoot->chSet[i+1];
-      homeRoot->chSet[i]->previous = homeRoot->chSet[homeRoot->chAmt - 1];
-    }
-
-    else if (i == homeRoot->chAmt - 1) {
-      homeRoot->chSet[i]->next = homeRoot->chSet[0];
-      homeRoot->chSet[i]->previous = homeRoot->chSet[i - 1];
-    }
-  }
+  toolbar->establishNavigation();
+  root->appendChild(toolbar);
+  root->appendChild(content);
 }
 
 #endif

@@ -35,14 +35,14 @@ void setup() {
 	randomSeed(analogRead(0));
 
 	Screen *homeScreen = new Screen(&tft);
-	Screen *itemScreen = new Screen(&tft);
+	// Screen *itemScreen = new Screen(&tft);
 
 	initHomeScreen(homeScreen);
-	initItemScreen(itemScreen);
+	// initItemScreen(itemScreen);
 
 	guiMgr = new GuiManager();
 	guiMgr->appendScreen(homeScreen);
-	guiMgr->appendScreen(itemScreen);
+	// guiMgr->appendScreen(itemScreen);
 
 	guiMgr->systemState = HOME_STATE;
 }

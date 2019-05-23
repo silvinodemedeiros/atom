@@ -30,6 +30,7 @@ class Style {
     int bgColor = MAINBG;
 
     int textSize = 2;
+    bool textWrap = false;
 
     Style() {}
   

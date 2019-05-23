@@ -22,7 +22,8 @@ class Screen {
 
     enum ScreenState {
       INITIAL,
-      IS_UPDATING
+      IS_UPDATING,
+      TRANSITIONING_IN
     };
 
     ScreenState state = INITIAL;

@@ -30,7 +30,7 @@ class Block {
     int translationDeltaX = 0;
     int expansionDeltaHeight = 0;
     int expansionDeltaWidth = 0;
-    int translationStep = 15;
+    int translationStep = 25;
     int expansionHeightStep = 15;
     int expansionWidthStep = 15;
 
@@ -90,6 +90,7 @@ class Block {
         display->setTextColor(style->bgColor);
         display->setCursor(tX, tY);
         display->setTextSize(style->textSize);
+        display->setTextWrap(style->textWrap);
         display->print(text);
       }
     }
@@ -106,6 +107,7 @@ class Block {
         display->setTextColor(style->borderColor);
         display->setCursor(tX, tY);
         display->setTextSize(style->textSize);
+        display->setTextWrap(style->textWrap);
         display->print(text);
       }
     }
@@ -202,6 +204,14 @@ class Block {
 
     // VERTICAL TRANSLATION
     void translateY(int deltaY) {
+      int tW = text.length() * 12;
+      int tH = 16;
+      int tX = style->x + (style->width / 2) - (tW / 2);
+      int tY = style->y + (style->height / 2) - (tH / 2);
+
+      eraseText();
+      display->drawRect(tX, tY, tW, tH, style->borderColor);
+
       translationDeltaY = deltaY;
       style->initY = style->y;
       setState(IS_TRANSITIONING_Y);
@@ -238,6 +248,14 @@ class Block {
 
     // HORIZONTAL TRANSLATION
     void translateX(int deltaX) {
+      int tW = text.length() * 12;
+      int tH = 16;
+      int tX = style->x + (style->width / 2) - (tW / 2);
+      int tY = style->y + (style->height / 2) - (tH / 2);
+
+      eraseText();
+      display->drawRect(tX, tY, tW, tH, style->borderColor);
+
       translationDeltaX = deltaX;
       style->initX = style->x;
       setState(IS_TRANSITIONING_X);
