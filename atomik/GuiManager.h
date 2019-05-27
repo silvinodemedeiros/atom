@@ -1,15 +1,16 @@
 #ifndef GUIMANAGER_H
 #define GUIMANAGER_H
 
-#include "atomik/Screen.h"
+#include "Screen.h"
 
-#include "states.h"
-#include "input.h"
+#include "../states.h"
+#include "../input.h"
 
 class GuiManager {
 
   public:
     Screen *currentScreen = 0;
+    Screen *outScreen = 0;
     Screen **screenSet;
     int screenAmt = 0;
 
@@ -19,6 +20,8 @@ class GuiManager {
     int inputWait = 500;
 
     int systemState;
+    int nextSystemState;
+    bool isTransitioning = false;
 
     GuiManager() {};
 
@@ -78,7 +81,15 @@ class GuiManager {
 
       if (selInput == HIGH) {
         if (currentScreen->currentOption->nextSystemState != -1) {
-          activate(currentScreen->currentOption->nextSystemState);
+          
+          if (currentScreen->hasTransitionOut) {
+            currentScreen->wrapper->translateX(-WIDTH);
+            nextSystemState = currentScreen->currentOption->nextSystemState;
+            isTransitioning = true;
+          } else {
+            activate(currentScreen->currentOption->nextSystemState);
+          }
+
           lastInput = millis();
         } else {
           currentScreen->currentOption->manageSelection(currentScreen->currentOption);
@@ -116,7 +127,13 @@ class GuiManager {
 
       if (inputLock == false) {
         currentScreen->manageState();
+
+        if (isTransitioning && !currentScreen->wrapper->isRendering()) {
+          activate(nextSystemState);
+          isTransitioning = false;
+        }
       }
+
     }
     
 };

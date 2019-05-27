@@ -1,8 +1,9 @@
 #ifndef STATES_H
 #define STATES_H
 
-#define SYSTEM_INITIAL 0
 #define HOME_STATE 1
-#define ITEM_STATE 2
+#define FIRST_STATE 2
+#define SECOND_STATE 3
+#define THIRD_STATE 4
 
 #endif

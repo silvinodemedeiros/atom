@@ -61,7 +61,9 @@ class Block {
 
     void draw() {
       if (style->visibility) {
-        display->drawRect(style->x, style->y, style->width, style->height, style->borderColor);
+        if (style->border) {
+          display->drawRect(style->x, style->y, style->width, style->height, style->borderColor);
+        }
         
         if (text != "") {
           drawText();
@@ -248,17 +250,13 @@ class Block {
 
     // HORIZONTAL TRANSLATION
     void translateX(int deltaX) {
-      int tW = text.length() * 12;
-      int tH = 16;
-      int tX = style->x + (style->width / 2) - (tW / 2);
-      int tY = style->y + (style->height / 2) - (tH / 2);
 
       eraseText();
-      display->drawRect(tX, tY, tW, tH, style->borderColor);
 
       translationDeltaX = deltaX;
       style->initX = style->x;
       setState(IS_TRANSITIONING_X);
+      stepTranslationX();
     }
 
     void stepTranslationX() {

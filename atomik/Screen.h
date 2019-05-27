@@ -33,6 +33,7 @@ class Screen {
     Container *wrapper;
     Container *currentOption;
     int systemState;
+    bool hasTransitionOut = false;
     String name;
 
     Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
@@ -49,7 +50,7 @@ class Screen {
     }
 
     void manageState() {
-      if (!isActive) { return; }
+      if (!isActive && !wrapper->isRendering()) { return; }
 
       wrapper->manageState();
     }

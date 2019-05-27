@@ -8,41 +8,44 @@ Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 #include "colors.h" 								// color set
 #include "states.h"									// machine states
 #include "input.h" 									// input ports
-#include "shared.h"									// useful functions
 
 #include "atomik/Screen.h"
+#include "atomik/GuiManager.h"
 
-#include "renderHomescreen.h"
-#include "renderItemscreen.h"
-
-#include "GuiManager.h"
+#include "ItemScreen.h"
+#include "initHomeScreen.h"
 
 GuiManager *guiMgr;
 
 void setup() {
-	srand((unsigned)millis());
 	tft.reset();
 	tft.begin(0x9341);
-	tft.setRotation(rot);
-
-	Serial.begin(9600);
+	tft.setRotation(2);
 
 	pinMode(bw, INPUT_PULLUP);
 	pinMode(fw, INPUT_PULLUP);
 	pinMode(sel, INPUT_PULLUP);
 	pinMode(ret, INPUT_PULLUP);
 
-	randomSeed(analogRead(0));
+	guiMgr = new GuiManager();
 
 	Screen *homeScreen = new Screen(&tft);
-	// Screen *itemScreen = new Screen(&tft);
+
+	ItemScreen *firstScreen = new ItemScreen(
+		&tft, FIRST_STATE, "First Screen", "Content Here");
+
+	ItemScreen *secondScreen = new ItemScreen(
+		&tft, SECOND_STATE, "Second Screen", "Another Content");
+
+	ItemScreen *thirdScreen = new ItemScreen(
+		&tft, THIRD_STATE, "Third Screen", "Third Content");
 
 	initHomeScreen(homeScreen);
-	// initItemScreen(itemScreen);
 
-	guiMgr = new GuiManager();
 	guiMgr->appendScreen(homeScreen);
-	// guiMgr->appendScreen(itemScreen);
+	guiMgr->appendScreen(firstScreen);
+	guiMgr->appendScreen(secondScreen);
+	guiMgr->appendScreen(thirdScreen);
 
 	guiMgr->systemState = HOME_STATE;
 }

@@ -26,6 +26,7 @@ class Style {
     DisplayStyle display = NONE;
     bool visibility = true;
 
+    bool border = true;
     int borderColor = DEFAULTGREEN;
     int bgColor = MAINBG;
 

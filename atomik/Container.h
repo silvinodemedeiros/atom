@@ -148,12 +148,10 @@ class Container : public Block {
 
     void focus() {
       this->style->borderColor = WHITE;
-      focused = true;
     }
 
     void unfocus() {
       this->style->borderColor = DEFAULTGREEN;
-      focused = false;
     }
 
     Container* focusNext() {
