@@ -5,6 +5,14 @@
 #include "atomik/Container.h"
 #include "atomik/StyleTypes.h"
 
+void slideOutLeft (Screen *screen) {
+  screen->wrapper->translateX(-WIDTH);
+}
+
+void slideInLeft (Screen *screen) {
+  screen->wrapper->translateX(WIDTH);
+}
+
 void initHomeScreen(Screen *homeScreen) {
 
   String title = "Home Screen";
@@ -16,8 +24,10 @@ void initHomeScreen(Screen *homeScreen) {
     THIRD_STATE
   };
 
-  homeScreen->hasTransitionOut = true;
   homeScreen->systemState = HOME_STATE;
+  homeScreen->transitionOut = slideOutLeft;
+  homeScreen->transitionIn = slideInLeft;
+  homeScreen->wrapper->moveX(-WIDTH);
 
   Container *root = new Container();
   root->style->display = COLUMN;
@@ -31,7 +41,7 @@ void initHomeScreen(Screen *homeScreen) {
   root->appendChild(titleBar);
 
   Container *itemContainer = new Container();
-  itemContainer->style->fill = 5;
+  itemContainer->style->fill = 6;
   itemContainer->style->display = COLUMN;
   itemContainer->style->visibility = false;
   root->appendChild(itemContainer);

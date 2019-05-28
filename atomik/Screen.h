@@ -7,11 +7,7 @@
 class Screen {
   protected:
     Adafruit_TFTLCD *display;
-    const int marginH = 15;
-    const int marginV = 20;
     const int bgColor = MAINBG;
-    int wrapperW = WIDTH - marginH * 2;
-    int wrapperH = HEIGHT - marginV * 2;
     
     long inputLock = 0;
     long inputWait = 200;
@@ -30,11 +26,17 @@ class Screen {
     bool isActive = false;
 
   public:
+    const int marginH = 0;
+    const int marginV = 0;
+    int wrapperW = WIDTH;
+    int wrapperH = HEIGHT;
     Container *wrapper;
     Container *currentOption;
     int systemState;
-    bool hasTransitionOut = false;
     String name;
+
+    void (*transitionOut)(Screen *screen) = 0;
+    void (*transitionIn)(Screen *screen) = 0;
 
     Screen(Adafruit_TFTLCD *tft, DisplayStyle displayStyle = NONE) {
       boolean isActive = false;
@@ -67,6 +69,11 @@ class Screen {
     }
 
     void activate() {
+
+      if (transitionIn) {
+        transitionIn(this);
+      }
+
       isActive = true;
     }
 

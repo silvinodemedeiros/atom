@@ -10,10 +10,8 @@
 class Container : public Block {
 
   public:
-    void (*manageForwards)(Container*) = 0;
-    void (*manageBackwards)(Container*) = 0;
-    void (*manageSelection)(Container*) = 0;
-    void (*manageReturn)(Container*) = 0;
+    void (*onSelected)(Container*) = 0;
+    void (*onReturnPressed)(Container*) = 0;
   
     Container **chSet;
     int chAmt = 0;
@@ -96,14 +94,14 @@ class Container : public Block {
         switch (this->style->display) {
           case COLUMN:
             child->style->width = this->style->width;
-            child->style->height = (child->style->fill * unitFillHeight) + child->style->fill * (this->style->gap - 3);
+            child->style->height = (child->style->fill * unitFillHeight) + child->style->fill * (this->style->gap - 3) - this->chAmt * 2;
 
             currentY += child->style->height + this->style->gap - 3;
           break;
 
           case ROW:
             child->style->height = this->style->height;
-            child->style->width = (child->style->fill * unitFillWidth) + child->style->fill * (this->style->gap - 3);
+            child->style->width = (child->style->fill * unitFillWidth) + child->style->fill * (this->style->gap - 3) - this->chAmt * 2;
 
             currentX += child->style->width + this->style->gap - 3;
           break;
@@ -130,12 +128,32 @@ class Container : public Block {
       }
     }
 
+    void moveY(int offsetY) {
+      style->y = offsetY;
+
+      for (int i = 0; i < chAmt; i++) {
+        chSet[i]->moveY(offsetY);
+      }
+    }
+
     void translateX(int deltaX) {
       Block::translateX(deltaX);
 
       for (int i = 0; i < chAmt; i++) {
         chSet[i]->translateX(deltaX);
       }
+    }
+    
+    void moveX(int offsetX) {
+      erase();
+      
+      style->x = offsetX;
+
+      for (int i = 0; i < chAmt; i++) {
+        chSet[i]->moveX(offsetX);
+      }
+
+      draw();
     }
 
     void expandHeight(int deltaH) {

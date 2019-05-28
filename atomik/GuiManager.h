@@ -82,8 +82,8 @@ class GuiManager {
       if (selInput == HIGH) {
         if (currentScreen->currentOption->nextSystemState != -1) {
           
-          if (currentScreen->hasTransitionOut) {
-            currentScreen->wrapper->translateX(-WIDTH);
+          if (currentScreen->transitionOut) {
+            currentScreen->transitionOut(currentScreen);
             nextSystemState = currentScreen->currentOption->nextSystemState;
             isTransitioning = true;
           } else {
@@ -92,7 +92,7 @@ class GuiManager {
 
           lastInput = millis();
         } else {
-          currentScreen->currentOption->manageSelection(currentScreen->currentOption);
+          currentScreen->currentOption->onSelected(currentScreen->currentOption);
           lastInput = millis();
         }
 
@@ -109,7 +109,7 @@ class GuiManager {
       }
 
       else if (retInput == HIGH) {
-        currentScreen->currentOption->manageReturn(currentScreen->currentOption);
+        currentScreen->currentOption->onReturnPressed(currentScreen->currentOption);
         lastInput = millis();
       }
     }

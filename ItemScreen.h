@@ -5,6 +5,15 @@
 #include "atomik/Container.h"
 
 #include "TitleBar.h"
+
+void slideInDown(Screen *screen) {
+  screen->wrapper->translateY(-HEIGHT);
+}
+
+void slideOutDown(Screen *screen) {
+  screen->wrapper->translateY(HEIGHT);
+}
+
 class ItemScreen : public Screen {
 
   public:
@@ -16,6 +25,7 @@ class ItemScreen : public Screen {
     ) : Screen (tft) {
 
       systemState = stateValue;
+      wrapper->moveY(HEIGHT);
 
       Container *root = new Container();
       root->style->display = COLUMN;
@@ -30,6 +40,11 @@ class ItemScreen : public Screen {
       content->style->display = COLUMN;
       content->text = screenContent;
       root->appendChild(content);
+
+      this->currentOption = content;
+      content->nextSystemState = HOME_STATE;
+      transitionIn = slideInDown;
+      transitionOut = slideOutDown;
     }
 
 };
